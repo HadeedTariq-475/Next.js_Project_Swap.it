@@ -5,9 +5,13 @@ import Link from 'next/link';
 function SignUpPage() {
   return (
     <div
-      className="min-h-screen w-full bg-cover bg-center bg-no-repeat  flex justify-center md:justify-end items-center px-4"
+      className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex justify-between md:justify-between items-start px-4 pt-3" 
       style={{ backgroundImage: "url('/images/bg-signup.png')" }}
     >
+      <div className='ml-12 mt-4'>
+        <h2 className='text-3xl font-bold text-black'>Trade,Share,Swap</h2>
+        <p className='text-black text-xl'>It's that simple!</p>
+      </div>
       <form className="w-full max-w-sm md:mr-28">
         <h1 className="text-3xl md:text-4xl font-bold mb-2 text-black text-center">Sign Up</h1>
         <p className="mb-4 text-center text-black">Create your account in a second</p>
