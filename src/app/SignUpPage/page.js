@@ -12,7 +12,7 @@ function SignUpPage() {
         <h2 className='text-3xl font-bold text-black'>Trade,Share,Swap</h2>
         <p className='text-black text-xl'>It's that simple!</p>
       </div>
-      <form className="w-full max-w-sm md:mr-28">
+      <form className="w-[320px] max-w-sm md:mr-28">
         <h1 className="text-3xl md:text-4xl font-bold mb-2 text-black text-center">Sign Up</h1>
         <p className="mb-4 text-center text-black">Create your account in a second</p>
 
