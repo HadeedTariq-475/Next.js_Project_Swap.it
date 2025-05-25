@@ -40,10 +40,10 @@ export default function NavBar() {
           <span className="text-black mt-1 ml-1">{creditCount}</span>
         </div>
         <Link href="#">
-          <Image src="/images/donation-icon.png" alt="donation" width={30} height={30} className="-scale-x-100 ml-4" />
+          <Image src="/images/donation-icon.png" alt="donation" width={32} height={32} className="-scale-x-100 ml-4 mt-1" />
         </Link>
         <Link href="#">
-          <Image src="/images/wishlist.png" alt="wishlist" width={30} height={30} className="ml-4"/>
+          <Image src="/images/wishlist.png" alt="wishlist" width={25} height={25} className="ml-4 mt-2"/>
         </Link>
         <Link href="#">
           <div className="relative ml-4">
