@@ -41,7 +41,7 @@ function LoginPage() {
                         </div>
                         <button type="submit" className="text-sm py-2 px-4 bg-[#8139ed] text-white rounded hover:bg-[#8139ed] transition">Log in</button>
                         <p className='text-black flex justify-center text-sm'>
-                            Don't have an account? <a href="#" className="text-[#8139ed] hover:underline ml-1">Sign up</a>
+                            Don't have an account? <a href="/SignUpPage" className="text-[#8139ed] hover:underline ml-1">Sign up</a>
                         </p>
                     </form>           
                     <div className="flex items-center text-black my-6">
