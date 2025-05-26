@@ -3,7 +3,7 @@ import React from 'react';
 
 function Search({ placeholder = "What are you looking for?", onChange }) {
   return (
-    <div className="bg-[#EDE6F6] flex items-center ml-5 
+    <div className="bg-[#EDE6F6] flex items-center ml-3 
       mt-6 w-full max-w-[1240px] h-[40px] lg:h-[50px] rounded-[10px]">
       <input
         type="text"
