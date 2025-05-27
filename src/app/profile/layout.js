@@ -36,9 +36,9 @@ export default function ProfileLayout({ children }) {
             <div className="bg-[#EDE6F6] mx-3 mt-2 h-10 rounded-[10px] text-black text-sm font-semibold flex items-center pl-4">
               {pathname}
             </div>
-            <div className="flex min-h-screen mt-2">
+            <div className="flex min-h-screen mt-3">
                 <SideBar />
-                <main className="flex-1 px-12 py-4 mb-6">{children}</main>
+                <main className="flex-1 px-6 py-4 mb-6">{children}</main>
             </div>
             <Footer />
         </div>
