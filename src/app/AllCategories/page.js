@@ -1,6 +1,7 @@
 "use client";
 import React , {useState} from 'react';
 import { useEffect } from 'react';
+import Image from 'next/image';
 
 import Banner from '/src/app/components/Banner';
 import Search from '/src/app/components/Search';   
@@ -59,6 +60,15 @@ function AllCategories() {
 
     // For product grid
     const [products, setProducts] = useState([]);
+
+    //For page number
+    const [currentPage, setPage] = useState(1);
+    const productsPerPage = 9;
+
+    //
+    const lastPageIndex = currentPage * productsPerPage;
+    const firstPageIndex = lastPageIndex - productsPerPage;
+    const currentProducts = products.slice(firstPageIndex, lastPageIndex);
 
     // Fake data load for checking the UI
     useEffect(() => {
@@ -138,14 +148,46 @@ function AllCategories() {
             </div>
             <Banner imageSrc="/images/allCategories.png" pageTitle="All Categories"></Banner>
             <Search onChange={handleSearch}></Search>
-            <div className="flex gap-8 p-6">
+            <div className="flex gap-8 pl-6 pb-6">
                 <CategorySideBar
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
                 />
                 <div className="flex-1">
-                    <CategoryFilterBar filters={selectedFilters} setFilters={setFilters} />
-                    <ProductGrid products={filteredProducts} />
+                  <CategoryFilterBar filters={selectedFilters} setFilters={setFilters} />
+                  <ProductGrid products={currentProducts} />
+                  {/* page buttons */}
+                  <div className="flex justify-center items-center gap-4 mt-6 text-sm m-5">
+                    <button
+                      onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className=" disabled:opacity-50"
+                    >
+                      <Image
+                        src="/images/prev.png" 
+                        alt="Next" 
+                        width={20} 
+                        height={20}
+                      />
+                    </button>
+
+                    <span className="text-purple-600 font-medium">{`Page ${currentPage}`}</span>
+
+                    <button
+                      onClick={() => setPage((prev) =>
+                        Math.min(prev + 1, Math.ceil(filteredProducts.length / productsPerPage))
+                      )}
+                      disabled={currentPage === Math.ceil(filteredProducts.length / productsPerPage)}
+                      className=" disabled:opacity-50"
+                    >
+                      <Image
+                        src="/images/next.png" 
+                        alt="Next" 
+                        width={20} 
+                        height={20}
+                      />
+                    </button>
+                  </div>
                 </div>
             </div>
             <div className='bg-[#EDE6F6]'>
