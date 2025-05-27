@@ -8,10 +8,10 @@ function UniversalCard({ product }) {
     return (
         <div
             
-            className="rounded-2xl shadow-lg bg-white overflow-hidden w-60 cursor-pointer transition-transform hover:scale-105 hover:shadow-black "
+            className="rounded-2xl shadow-lg bg-white overflow-hidden w-[230px] cursor-pointer transition-transform hover:scale-105 hover:shadow-black flex flex-col"
         >
             {/* Image */}
-            <div className="relative w-full h-44">
+            <div className="relative w-full h-32">
                 <Image
                 src={product.image}
                 alt={product.title}
@@ -21,7 +21,7 @@ function UniversalCard({ product }) {
             </div>
 
             {/* IMage details */}
-            <div className="bg-purple-100 p-4 space-y-2 text-center">
+            <div className="bg-purple-100 p-4 space-y-2 text-center flex flex-grow flex-col">
                 {/* Title */}
                 <h3 className="text-black font-semibold text-base">
                 {product.title}
