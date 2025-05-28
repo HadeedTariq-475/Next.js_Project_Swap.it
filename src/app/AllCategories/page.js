@@ -148,7 +148,7 @@ function AllCategories() {
             </div>
             <Banner imageSrc="/images/allCategories.png" pageTitle="All Categories"></Banner>
             <Search onChange={handleSearch}></Search>
-            <div className="flex gap-8 pl-6 pb-6">
+            <div className="flex pl-4 pb-6">
                 <CategorySideBar
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}

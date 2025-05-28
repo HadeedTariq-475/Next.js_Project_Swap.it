@@ -8,7 +8,7 @@ export default function CategoryFilterBar({ filters, setFilters }) {
             <div className="flex gap-8">
             <div className="flex flex-col">
                 <label className="mb-1">
-                Type <span className="text-red-500">*</span>
+                Type
                 </label>
                 <select
                     className="border border-gray-500 rounded-md px-3 py-1 focus:outline-none font-medium"
@@ -57,7 +57,7 @@ export default function CategoryFilterBar({ filters, setFilters }) {
                 <span className="text-gray-600">to</span>
                 <input
                     type="number" max={10000} min={0}
-                    className="border border-gray-500 rounded-md w-24 px-2 py-1 focus:outline-none font-medium"
+                    className="border border-gray-500 rounded-md w-24 px-2 py-1 mr-8 focus:outline-none font-medium"
                     // This binds the value of the input field to the current value stored in the filters.priceMax part of the state.
                     value={filters.priceMax}
                     onChange={(event) => setFilters({ ...filters, priceMax: event.target.value })}
