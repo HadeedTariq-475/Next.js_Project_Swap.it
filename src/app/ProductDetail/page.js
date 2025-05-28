@@ -143,13 +143,13 @@ function ProductDetail() {
                 </div>
             </div>
             {/* Seller Detail */}
-            <div className="bg-[#EDE6F6] flex w-[1000px] justify-start items-center mt-10 rounded-md ml-36">
+            <div className="bg-[#EDE6F6] flex flex-col md:flex-row w-full max-w-[1000px] justify-start items-center mt-10 rounded-md lg:ml-36 md:ml-10">
                 <Image
                         src="/images/seller.png"
                         alt="Seller"
                         width={180}
                         height={180}
-                        className="rounded-full m-2 ml-6"
+                        className="rounded-full lg:m-2 lg:ml-6 "
                 />
                 <div className="text-black ml-5 mr-60 w-[200px]">
                     <strong>Edward William<br></br></strong>
