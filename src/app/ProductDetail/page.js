@@ -143,7 +143,7 @@ function ProductDetail() {
                 </div>
             </div>
             {/* Seller Detail */}
-            <div className="bg-[#EDE6F6] flex flex-col md:flex-row w-full max-w-[1000px] justify-start items-center mt-10 rounded-md lg:ml-36 md:ml-10">
+            <div className="bg-[#EDE6F6] flex flex-col md:flex-row w-full max-w-[1000px] justify-start items-center mt-10 rounded-md lg:ml-36 md:ml-10 mb-14">
                 <Image
                         src="/images/seller.png"
                         alt="Seller"
@@ -178,6 +178,7 @@ function ProductDetail() {
                 </div>
             </div>
             {/* Featured products */}
+            <strong className="text-black ml-36 lg:text-[25px]">Your next Favorite?</strong>
             <div className="ml-32 mt-12 mb-12 flex">
                 <button onClick={prevProduct} disabled={currentIndex <= 0} className="p-4">
                     <Image src="/images/prev.png" alt="Prev" width={20} height={20}/>
