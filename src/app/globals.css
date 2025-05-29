@@ -57,3 +57,14 @@ input[type='range']::-webkit-slider-thumb {
   transform: rotate(var(--thumb-rotate, 90deg));
 
 }
+
+html, body {
+  overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Webkit (Chrome, Safari) */
+body::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}

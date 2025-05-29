@@ -18,7 +18,7 @@ const categories = [
 
 function CategorySideBar({ selectedCategory, setSelectedCategory }) {
     return (
-        <div className="w-[280px] bg-[#e3cef9] rounded-[15px] pt-0 pb-6 mt-6 ml-3 h-[450px]">
+        <div className="w-[280px] bg-[#e3cef9] rounded-[15px]  pb-6 mt-6 ml-3 h-[450px]">
             <div className="bg-[#9C60F4] rounded-t-[15px] text-white text-center font-bold py-[6px] text-sm tracking-widest">
                 CATEGORY
             </div>
