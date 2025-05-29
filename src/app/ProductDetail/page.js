@@ -154,7 +154,7 @@ function ProductDetail() {
                 <div className="text-black ml-5 mr-60 w-[200px]">
                     <strong>Edward William<br></br></strong>
                     Member since 2024<br></br>
-                    <strong><Link href={""}>View Profile</Link></strong><br></br><br></br>
+                    <strong><Link href={"/SellerProfile"}>View Profile</Link></strong><br></br><br></br>
                     <div className="flex justify-center p-0 bg-[#9C60F4] rounded-md text-white text-sm tracking-wider">
                         <button> 
                             Negotiate Deal 

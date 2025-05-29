@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 function LoginPage() {
     return (
@@ -37,11 +38,11 @@ function LoginPage() {
                                 </span>
                                 Keep me logged in
                             </label>
-                            <a href="#" className="text-[#8139ed] hover:underline">Forgot password?</a>
+                            <Link href="#" className="text-[#8139ed] hover:underline">Forgot password?</Link>
                         </div>
                         <button type="submit" className="text-sm py-2 px-4 bg-[#8139ed] text-white rounded hover:bg-[#8139ed] transition">Log in</button>
                         <p className='text-black flex justify-center text-sm'>
-                            Don't have an account? <a href="/SignUpPage" className="text-[#8139ed] hover:underline ml-1">Sign up</a>
+                            Don't have an account? <Link href="/SignUpPage" className="text-[#8139ed] hover:underline ml-1">Sign up</Link>
                         </p>
                     </form>           
                     <div className="flex items-center text-black my-6">
