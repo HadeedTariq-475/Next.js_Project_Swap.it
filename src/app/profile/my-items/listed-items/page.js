@@ -1,12 +1,20 @@
+"use client"
+
 import React from 'react'
 import ListedItemCard from '@/app/components/ListedItemCard'
+import AddListedItem from '@/app/components/AddListedItem'
+import { useState } from 'react'
 
 export default function ListedItems() {
+
+  const [showAddItemForm, setShowAddItemForm] = useState(false);
+
   return (
     <div>
       <div className='flex justify-between items-start mb-4'>
         <h1 className="text-black text-2xl font-bold mb-6">Listed Items</h1>
-        <button className='text-white bg-purple-500 border-none outline-none px-5 py-2 rounded-2xl'>New +</button>
+        <button className='text-white bg-purple-500 border-none outline-none px-5 py-2 rounded-2xl' onClick={() => setShowAddItemForm(true)}>New +</button>
+        {showAddItemForm && <AddListedItem onClose={() => setShowAddItemForm(false)} />}
       </div>
 
       <div className='grid grid-cols-3 gap-x-6 gap-y-8'>

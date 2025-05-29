@@ -7,8 +7,8 @@ export default function Settings() {
 
       <h1 className="text-black text-2xl font-bold mb-16">Settings</h1>
 
-      <div className='flex flex-col border-2 border-black rounded-md mb-8 mx-8'>
-        <div className=' px-6 py-4 border-b-2 border-black'>
+      <div className='flex flex-col border-[0.5px] border-black rounded-md mb-8 mx-8'>
+        <div className=' px-6 py-4 border-b-[0.5px] border-black'>
           <p className='text-black text-xl font-semibold'>My Ads Settings</p>
         </div>
         <div className='flex justify-between items-center px-6 py-4'>
@@ -17,8 +17,8 @@ export default function Settings() {
         </div>
       </div>
 
-      <div className='flex flex-col border-2 border-black rounded-md mx-8'>
-        <div className=' px-6 py-4 border-b-2 border-black'>
+      <div className='flex flex-col border-[0.5px] border-black rounded-md mx-8'>
+        <div className=' px-6 py-4 border-b-[0.5px] border-black'>
           <p className='text-black text-xl font-semibold'>Notifications</p>
         </div>
         <div className='flex justify-between items-center px-6 py-4'>

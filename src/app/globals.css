@@ -19,3 +19,12 @@ body {
   background: var(--background);
   font-family: var(--font-jost), Arial, Helvetica, sans-serif;
 }
+
+/* Tailwind-compatible hidden scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}

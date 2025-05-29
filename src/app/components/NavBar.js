@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
+import InboxPanel from "./InboxPanel";
 
 
 
@@ -12,6 +13,11 @@ export default function NavBar() {
   const [creditCount, setCreditCount] = useState(2)
   const [messageCount, setmessageCount] = useState(4)
   const [notificationCount, setnotificationCount] = useState(3)
+
+  const [isOpen, setIsOpen] = useState(false)
+  
+  const OpenInbox = () => setIsOpen(true)
+  const CloseInbox = () => setIsOpen(false)
 
   return (
     <div className="flex justify-between items-center">
@@ -47,7 +53,8 @@ export default function NavBar() {
         </Link>
         <Link href="#">
           <div className="relative ml-4">
-            <Image src="/images/message-icon.png" alt="messages" width={20} height={20} className="relative top-1 mt-1"/>
+            <Image src="/images/message-icon.png" alt="messages" width={20} height={20} className="relative top-1 mt-1 cursor-pointer" onClick={OpenInbox}/>
+            {isOpen && <InboxPanel onClose={CloseInbox}/>}
             <div className="bg-[#FFFB0D] rounded-full w-[15px] h-[15px] text-black absolute -top-1 -right-1">
               <span className="relative left-1 -top-1.5 text-xs ">{messageCount}</span>
             </div> 

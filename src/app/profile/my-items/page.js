@@ -1,16 +1,26 @@
+"use client"
+
 import React from 'react'
 import ListedItemCard from '@/app/components/ListedItemCard'
 import ListedDonationCard from '@/app/components/ListedDonationCard'
 import Link from 'next/link'
+import AddListedItem from '@/app/components/AddListedItem'
+import AddDonatedItems from '@/app/components/AddDonatedItems'
+import { useState } from 'react'
 
 export default function MyItems() {
+
+  const [showAddItemForm, setShowAddItemForm] = useState(false);
+  const [showAddDonationItemForm, setShowAddDonationItemForm] = useState(false);
+
   return (
     <div>
       <h1 className="text-black text-2xl font-bold mb-6">My Items</h1>
 
       <div className='flex items-center gap-6'>
         <p className='text-black'>Listed Items</p>
-        <button className='text-white bg-purple-500 border-none outline-none px-5 py-2 rounded-2xl'>New +</button>
+        <button className='text-white bg-purple-500 border-none outline-none px-5 py-2 rounded-2xl' onClick={() => setShowAddItemForm(true)}>New +</button>
+        {showAddItemForm && <AddListedItem onClose={() => setShowAddItemForm(false)} />}
       </div>
 
       <div className='grid grid-cols-3 gap-x-4 mt-4 mb-8'>  
@@ -25,7 +35,8 @@ export default function MyItems() {
       
       <div className='flex items-center gap-6 mt-2'>
         <p className='text-black'>Donated Items</p>
-        <button className='text-white bg-purple-500 border-none outline-none px-5 py-2 rounded-2xl'>New +</button>
+        <button className='text-white bg-purple-500 border-none outline-none px-5 py-2 rounded-2xl' onClick={() => setShowAddDonationItemForm(true)}>New +</button>
+        {showAddDonationItemForm && <AddDonatedItems onClose={() => setShowAddDonationItemForm(false)} />}
       </div>
 
       <div className='grid grid-cols-3 gap-x-4 mt-4 mb-8'>  

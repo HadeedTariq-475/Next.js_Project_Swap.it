@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import InboxPanel from "./InboxPanel";
 
 export default function HomeNavBar() {
 
@@ -10,6 +11,11 @@ export default function HomeNavBar() {
   const [creditCount] = useState(2);
   const [messageCount] = useState(4);
   const [notificationCount] = useState(3);
+
+  const [isOpen, setIsOpen] = useState(false)
+
+  const OpenInbox = () => setIsOpen(true)
+  const CloseInbox = () => setIsOpen(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -57,8 +63,9 @@ export default function HomeNavBar() {
           <Image src="/images/donation-icon.png" alt="donate" width={30} height={30} className="-scale-x-100" />
           <Image src="/images/wishlist.png" alt="wishlist" width={30} height={30} />
           
-          <div className="relative">
+          <div className="relative cursor-pointer" onClick={OpenInbox}>
             <Image src="/images/message-icon.png" alt="msg" width={25} height={25} />
+            
             <div className="bg-yellow-300 rounded-full w-4 h-4 text-black text-xs absolute -top-1 -right-1 flex items-center justify-center">{messageCount}</div>
           </div>
 
@@ -70,6 +77,8 @@ export default function HomeNavBar() {
           <Image src="/images/profile-icon.png" alt="profile" width={30} height={30} />
         </div>
       </div>
+
+      {isOpen && <InboxPanel onClose={CloseInbox}/>}
     </div>
   );
 }
