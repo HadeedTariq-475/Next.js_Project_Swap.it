@@ -65,10 +65,6 @@ function AllCategories() {
     const [currentPage, setPage] = useState(1);
     const productsPerPage = 9;
 
-    //
-    const lastPageIndex = currentPage * productsPerPage;
-    const firstPageIndex = lastPageIndex - productsPerPage;
-    const currentProducts = products.slice(firstPageIndex, lastPageIndex);
 
     // Fake data load for checking the UI
     useEffect(() => {
@@ -138,6 +134,10 @@ function AllCategories() {
     return matchCategory && matchCredits && matchType && matchPrice;
   });
 
+  //
+    const lastPageIndex = currentPage * productsPerPage;
+    const firstPageIndex = lastPageIndex - productsPerPage;
+    const currentProducts = filteredProducts.slice(firstPageIndex, lastPageIndex);
 
     //here comes the main we all were waiting for...probably not
 
@@ -148,7 +148,7 @@ function AllCategories() {
             </div>
             <Banner imageSrc="/images/allCategories.png" pageTitle="All Categories"></Banner>
             <Search onChange={handleSearch}></Search>
-            <div className="flex gap-8 pl-6 pb-6">
+            <div className="flex pl-4 pb-6">
                 <CategorySideBar
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
