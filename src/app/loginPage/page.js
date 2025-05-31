@@ -4,7 +4,6 @@ import Link from 'next/link';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-
 function LoginPage() {
 
     const router = useRouter();
@@ -37,28 +36,28 @@ function LoginPage() {
         setSuccessMessage("");
 
         try {
-        const res = await axios.post('/api/SignUp_Login', {
-            ...formData,
-            rememberMe,
-            login: true, 
-        });
+            const res = await axios.post('/api/SignUp_Login', {
+                ...formData,
+                rememberMe,
+                login: true, 
+            });
 
-        setSuccessMessage(res.data.message);
+            setSuccessMessage(res.data.message);
 
-        setTimeout(() => {
-            setSuccessMessage(""); // Hide message after 3 seconds
-        }, 3000);
+            setTimeout(() => {
+                setSuccessMessage(""); // Hide message after 3 seconds
+            }, 3000);
 
-        setTimeout(() => {
-        router.push("/");
-        }, 3100);
+            setTimeout(() => {
+            router.push("/");
+            }, 3100);
 
         } catch (err) {
-        if (err.response?.data?.error) {
-            setError(err.response.data.error);
-        } else {
-            setError("Something went wrong. Try again.");
-        }
+            if (err.response?.data?.error) {
+                setError(err.response.data.error);
+            } else {
+                setError("Something went wrong. Try again.");
+            }
         }
     };
 

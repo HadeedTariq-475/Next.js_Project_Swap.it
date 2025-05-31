@@ -11,50 +11,18 @@ import CategoryFilterBar from '/src/app/components/CategoryFilterBar';
 import ProductGrid  from '/src/app/components/ProductGrid';
 import Footer from '/src/app/components/Footer';
 
-
-/* SO, basically gnna tell flow cuz hehe i made it complicated(tho it was not needed)heheh
-  1. Products are loaded via useEffect() and stored in products state.
-  2. Filters are controlled by two states:
-    - selectedCategory (from the sidebar)
-    - selectedFilters (from the filter bar: type, credits, price range)
-  3. A derived variable filteredProducts is computed using .filter() on products:
-    - It checks that each product matches the selected category, credits, type, and price range.
-  4. The filtered product list is passed into <ProductGrid /> for rendering.
-*/
-
-
-
-
-
-function AllCategories() {
+function Donations() {
 
     // Function to handle search input changes
     function handleSearch(event) {
         console.log(event.target.value);
     }
 
-
-
-    /*
-      For sidebar 
-      State to manage the selected category from the sidebar
-      Default category is set to "All Categories"
-      This will be used to filter products based on the selected category
-    */
     const [selectedCategory, setSelectedCategory] = useState("All Categories");
 
-
-
-    /*
-      For filters
-      Same as above, but for filters
-      type an dstuff will be changed according to the selected type of product
-    */
     const [selectedFilters, setFilters] = useState({
-        type: "All",
+        type: "Donate",
         credits: "All",
-        priceMin: 0,
-        priceMax: 10000,
     });
 
 
@@ -104,20 +72,15 @@ function AllCategories() {
         title: "PS-Controller",
         credits: 0,
         price: 500,
-        type: "Exchange",
+        type: "Donate",
         category: "Others",
         image: "/images/p3dummy.jpg",
         description: "A high-quality PS controller in excellent condition, perfect for gaming enthusiasts.Moreover, it is compatible with various gaming consoles and PCs, ensuring a seamless gaming experience.",
       },
     ]);
   }, []);
+  
 
-
-
-  /*  Filter logic is actually doing the heavy lifting here hehehehehe
-    This function filters the products based on the selected category, credits, type, and price range, and stores the result in `filteredProducts`.
-    which is later passed to the ProductGrid component for rendering. So, you gnna sse it in where i called pg component
-  */
   const filteredProducts = products.filter((p) => {
     const matchCategory =
       selectedCategory === "All Categories" || p.category === selectedCategory;
@@ -125,13 +88,11 @@ function AllCategories() {
     const matchCredits =
       selectedFilters.credits === "All" || Number(p.credits) === Number(selectedFilters.credits);
 
-    const matchType =
-      selectedFilters.type === "All" || p.type === selectedFilters.type;
+    const matchType = 
+    p.type === selectedFilters.type;
 
-    const matchPrice =
-      p.price >= selectedFilters.priceMin && p.price <= selectedFilters.priceMax;
 
-    return matchCategory && matchCredits && matchType && matchPrice;
+    return matchCategory && matchCredits && matchType;
   });
 
   //
@@ -146,7 +107,7 @@ function AllCategories() {
             <div className='pl-4 pr-4 pb-1 pt-1'>
                 <NavBar className='p-4'></NavBar>
             </div>
-            <Banner imageSrc="/images/allCategories.png" pageTitle="All Categories"></Banner>
+            <Banner imageSrc="/images/donations.png" pageTitle="Donations"></Banner>
             <Search onChange={handleSearch}></Search>
             <div className="flex pl-4 pb-6">
                 <CategorySideBar
@@ -154,7 +115,7 @@ function AllCategories() {
                     setSelectedCategory={setSelectedCategory}
                 />
                 <div className="flex-1">
-                  <CategoryFilterBar filters={selectedFilters} setFilters={setFilters} />
+                  <CategoryFilterBar filters={selectedFilters} setFilters={setFilters} showType={false} showPrice={false} />
                   <ProductGrid products={currentProducts} />
                   {/* page buttons */}
                   <div className="flex justify-center items-center gap-4 mt-6 text-sm m-5">
@@ -199,4 +160,4 @@ function AllCategories() {
     );
 }
 
-export default AllCategories;
+export default Donations;
