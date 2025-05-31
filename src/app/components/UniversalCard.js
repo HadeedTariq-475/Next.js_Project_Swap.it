@@ -5,6 +5,8 @@ import Image from "next/image";
 
 function UniversalCard({ product }) {
 
+    const isDonated = product.type === "Donate";
+
     return (
         <div
             
@@ -28,15 +30,31 @@ function UniversalCard({ product }) {
                 </h3>
                 <div className="text-[#8F39CE] font-bold flex items-center justify-center gap-1 text-lg">
                     <hr className="flex-grow border-[#8F39CE]" />
-                    <span className="text-sm whitespace-nowrap text-[#8F39CE] flex items-center gap-1">
-                        <Image
-                        src = "/images/price-tag.png"
-                        className=""
-                        width={20}
-                        height={20}
-                        alt="price tag"/>
-                        {product.price}$   
-                    </span>
+                    {
+                        isDonated?(
+                            <span className="text-sm whitespace-nowrap text-[#8F39CE] flex items-center gap-1">
+                                <Image
+                                src = "/images/credits.png"
+                                className=""
+                                width={20}
+                                height={20}
+                                alt="credits"/>
+                                {product.credits}
+                            </span>
+                        ): 
+                        (
+                            <span className="text-sm whitespace-nowrap text-[#8F39CE] flex items-center gap-1">
+                                <Image
+                                    src = "/images/price-tag.png"
+                                    className=""
+                                    width={20}
+                                    height={20}
+                                    alt="price tag"
+                                />
+                                {product.price}$   
+                            </span>
+                        )
+                    }
                     <hr className="flex-grow border-[#8F39CE]" />
                 </div>
 
@@ -48,18 +66,22 @@ function UniversalCard({ product }) {
                 </p>
 
                 {/* Category and Credits */}
-                <div className="flex justify-between items-center pt-2 text-sm font-medium text-purple-700">
-                    <span className="pl-1">{product.type}</span>
-                    <div className="flex items-center gap-1 text-black">
-                        <Image
-                        src="/images/credits.png"
-                        width={20}
-                        height={20}
-                        alt="credits"
-                        />
-                        {product.credits}
-                    </div>
-                </div>
+                {
+                    !isDonated && (
+                        <div className="flex justify-between items-center pt-2 text-sm font-medium text-purple-700">
+                            <span className="pl-1">{product.type}</span>
+                            <div className="flex items-center gap-1 text-black">
+                                <Image
+                                src="/images/credits.png"
+                                width={20}
+                                height={20}
+                                alt="credits"
+                                />
+                                {product.credits}
+                            </div>
+                        </div>
+                    )
+                }
             </div>
         </div>
     );
