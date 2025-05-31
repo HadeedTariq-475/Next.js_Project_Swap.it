@@ -75,7 +75,7 @@ export default function AccountInfo() {
             Country/State <span className="text-red-500">*</span>
           </label>
           <select required className="border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-purple-500 text-black">
-              <option selected>Pakistan (PK)</option>
+              <option defaultValue={"PK"}>Pakistan (PK)</option>
               <option>Dubai (UAE)</option>
               <option>United States (USA)</option>
               <option>United Kingdom (UK)</option>

@@ -14,4 +14,27 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+model User {
+  id          Int      @id @default(autoincrement()) 
+  firstName   String
+  lastName    String
+  email       String   @unique
+  phone       String?  @unique
+  password    String   
+  country     String?
+  town        String?
+  address1    String?
+  address2    String?
+  credits     Int      @default(1)
+  userType    UserType @default(NORMAL)
+  createdAt   DateTime @default(now())  
+}
+
+enum UserType {
+  NORMAL
+  PREVILIGED
+}
+
+
         
