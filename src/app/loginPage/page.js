@@ -77,8 +77,8 @@ function LoginPage() {
             )}
             <div className="relative z-10 flex items-center min-h-screen px-4">
                 <div className="w-full max-w-[400px] lg:ml-32 md:ml-8 p-12 
-                    h-[510px]           
-                    lg:h-[500px]
+                    min-h-[500px]
+                    lg:min-h-[500px]
                     bg-white/35 backdrop-blur-[16px] rounded-[20px] 
                     shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] border border-white/60 text-black">
                     <h2 className="text-3xl font-bold mb-2 text-black">Login</h2>
