@@ -1,11 +1,43 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient, UserType } from '@prisma/client';
+import { cookies } from 'next/headers';
 
 const prisma = new PrismaClient();
 
 export async function POST(req) {
   try {
     const body = await req.json();
+    //Login
+      if(body.login){
+        console.log("Attempting login for:", body.email);
+        
+        const{email, password, rememberMe} = body;
+
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+          return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+        }
+
+        const passwordMatch = password === user.password;
+        if (!passwordMatch) {
+          return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+        }
+
+        const cookieOptions = {
+          path: '/',
+          httpOnly: true,
+          maxAge: rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 1, // 30 days or 1 hour
+        };
+        try {
+          const cookieStore = await cookies();
+          cookieStore.set('userId', user.id.toString(), cookieOptions);
+        } catch (cookieError) {
+          console.error("Cookie setting failed:", cookieError);
+        }
+        return NextResponse.json({ message: 'Login successful' }, { status: 200 });
+      }
+    //
+
     const { firstName, lastName, email, password, userType } = body;
 
     
@@ -40,7 +72,7 @@ export async function POST(req) {
         firstName,
         lastName,
         email,
-        password, // NOTE: In real apps, hash the password
+        password, 
         userType: finalUserType,
         credits,
       },
