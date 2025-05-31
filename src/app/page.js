@@ -11,6 +11,20 @@ import Link from 'next/link';
 
 
 export default function HomePage() {
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Read cookies from the browser
+    const cookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('userId='));
+    
+    if (cookie) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   const videoSources = [
     '/videos/video1.mp4',
     '/videos/video2.mp4',
@@ -52,7 +66,7 @@ export default function HomePage() {
       <HomeNavBar />
 
       {/* Video background section */}
-      <section className="relative h-screen w-full">
+      <section id="Home" className="relative h-screen w-full">
         <video
           ref={videoRef}
           autoPlay
@@ -81,14 +95,19 @@ export default function HomePage() {
         </div>
 
         {/*Login & SignUp Buttons */}
-        <div className='flex justify-between items-center gap-3 absolute bottom-8 left-14'>
-          <button className='bg-white text-purple-500 px-4 py-2 rounded-lg'>
-            Login
-          </button>
-          <button className='bg-purple-500 text-white px-4 py-2 rounded-lg'>
-            Sign Up
-          </button>
-        </div>
+        {!isLoggedIn && 
+        (<div className='flex justify-between items-center gap-3 absolute bottom-8 left-14'>
+          <Link href={"/loginPage"}>
+            <button className='bg-white text-purple-500 px-4 py-2 rounded-lg'>
+              Login
+            </button>
+          </Link>
+          <Link href={"/SignUpPage"}>
+            <button className='bg-purple-500 text-white px-4 py-2 rounded-lg'>
+              Sign Up
+            </button>
+          </Link> 
+        </div>)}
 
       </section>
 
@@ -122,7 +141,7 @@ export default function HomePage() {
       </section>
 
       {/* About Section */}
-      <section className=" bg-white py-2 relative pb-28">
+      <section id="About" className=" bg-white py-2 relative pb-28">
         <div className='w-full h-80 bg-bottom bg-cover' style={{backgroundImage: 'url("/images/AboutUs.png")'}}>
            <h1 className='text-black text-center font-bold text-3xl mb-1 pt-6'>About Us</h1>
            <p className='text-gray-500 text-center'>Real Deals. Real Fast.</p>
@@ -134,7 +153,9 @@ export default function HomePage() {
         </div>      
       </section>
 
-     <section className="px-4">
+
+      {/*Contact Section */}
+     <section id="Contact" className="px-4">
         <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 flex flex-col lg:flex-row max-w-screen-xl mx-auto gap-8 ">
           
           {/* Left Form Side */}

@@ -25,7 +25,7 @@ export async function POST(req) {
 
         const cookieOptions = {
           path: '/',
-          httpOnly: true,
+          httpOnly: false,
           maxAge: rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 1, // 30 days or 1 hour
         };
         try {
@@ -40,8 +40,7 @@ export async function POST(req) {
 
     const { firstName, lastName, email, password, userType } = body;
 
-    
-
+  
     // 2. Optional: Email pattern check (if not done on client)
     const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
     if (!emailPattern.test(email)) {

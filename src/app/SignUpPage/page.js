@@ -5,11 +5,13 @@ import SignUpInput from '/src/app/components/SignUpInput';
 import Link from 'next/link';
 import { useState } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 
 function SignUpPage() {
+  
+  const router = useRouter();
 
-  const [error,setError] = useState("")
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -18,7 +20,14 @@ function SignUpPage() {
     userType: "NORMAL"
   });
 
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    general: "",
+  });
 
+  const [successMessage, setSuccessMessage] = useState("");
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,29 +35,49 @@ function SignUpPage() {
     try {
       const res = await axios.post('/api/SignUp_Login', formData);
 
-      // If success, show alert or redirect
-      alert('User registered successfully!');
-      // Optional: clear form or navigate to login
+      setSuccessMessage(res.data.message);
+
+      setTimeout(() => {
+          setSuccessMessage(""); // Hide message after 3 seconds
+      }, 3000);
+
+      setTimeout(() => {
+        router.push("/loginPage");
+      }, 3100);
+
 
     } catch (err) {
-      // If the server sent an error response
+
       if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error);
+        const errorMsg = err.response.data.error;
+
+        if (errorMsg.toLowerCase().includes("email")) {
+          setErrors({ email: errorMsg, password: "", general: "" });
+        } else if (errorMsg.toLowerCase().includes("password")) {
+          setErrors({ email: "", password: errorMsg, general: "" });
+        } else {
+          setErrors({ email: "", password: "", general: errorMsg });
+        }
       } else {
-        setError('Failed to connect to server');
+        setErrors({ email: "", password: "", general: "Failed to connect to server" });
       }
+
     }
   };
 
 
   const handleChange = (e) => {
-
-    e.preventDefault()
-
+    e.preventDefault();
     const { name, value } = e.target;
+
     setFormData(prev => ({
       ...prev,
       [name]: value,
+    }));
+
+    setErrors(prevErrors => ({
+      ...prevErrors,
+      [name]: ""
     }));
   };
 
@@ -60,7 +89,15 @@ function SignUpPage() {
       style={{ backgroundImage: "url('/images/bg-signup.png')" }}
     >
       <div className='ml-12 mt-4'>
-        {error && <p className="text-red-500">{error}</p>}
+        {(successMessage || errors.general) && (
+          <div
+            className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded shadow-md z-50 transition-all duration-300 
+              ${successMessage ? "bg-green-500" : "bg-red-500"} text-white`}
+          >
+            {successMessage || errors.general}
+          </div>
+        )}
+
         <h2 className='text-3xl font-bold text-black'>Trade,Share,Swap</h2>
         <p className='text-black text-xl'>It's that simple!</p>
       </div>
@@ -71,19 +108,21 @@ function SignUpPage() {
         <SignUpInput type="text" desc="First Name" name="firstName" value={formData.firstName} onChange={handleChange}/>
         <SignUpInput type="text" desc="Last Name" name="lastName" value={formData.lastName} onChange={handleChange}/>
         <SignUpInput type="email" desc="Email" name="email" value={formData.email} onChange={handleChange}/>
+        {errors.email && <p className="text-red-500 z-10 absolute top-52 right-[460px]">{errors.email}</p>}
         <SignUpInput type="password" desc="Create Password" name="password" value={formData.password} onChange={handleChange}/>
+        {errors.password && <p className="text-red-500 z-10 absolute bottom-56 right-[440px] w-72">{errors.password}</p>}
 
         <div className='flex justify-between items-center text-black'>
           <label >Account Type:</label>
           <div className='flex gap-x-2'>
             <label>
-              <input type="radio" name="account" value="NORMAL" checked={formData.userType ===   "NORMAL"} onChange={handleChange} className='accent-[#8139ed]'/>
+              <input type="radio" name="userType" value="NORMAL" checked={formData.userType ===   "NORMAL"} onChange={handleChange} className='accent-[#8139ed]'/>
               <span className='ml-1'>Normal</span>
             </label>
 
             <label>
-              <input type="radio" name="account" value="PREVILIGED" checked={formData.userType === "PREVILIGED"} onChange={handleChange} className='accent-[#8139ed]'/>
-              <span className='ml-1'>Previliged</span>
+              <input type="radio" name="userType" value="PREVILEGED" checked={formData.userType === "PREVILEGED"} onChange={handleChange} className='accent-[#8139ed]'/>
+              <span className='ml-1'>Previleged</span>
             </label>
           </div>
         </div>

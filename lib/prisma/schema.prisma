@@ -33,7 +33,7 @@ model User {
 
 enum UserType {
   NORMAL
-  PREVILIGED
+  PREVILEGED
 }
 
 
