@@ -17,13 +17,14 @@ datasource db {
 
 model User {
   id          Int      @id @default(autoincrement()) 
+  profilePic String?
   firstName   String
   lastName    String
   email       String   @unique
   phone       String?  @unique
   password    String   
   country     String?
-  town        String?
+  city        String?
   address1    String?
   address2    String?
   credits     Int      @default(1)
@@ -53,8 +54,6 @@ enum Category {
 
 enum ProductType {
   BUY
-  EXCHANGE
-  BOTH
   DONATE
 }
 
@@ -70,10 +69,11 @@ model Product {
   id          Int          @id @default(autoincrement())
   title       String
   description String
-  price       Float?       // optional for donation or exchange
+  price       Int  @default(0)     
   credits     Int          @default(0)
   type        ProductType
   category    Category
+  exchange Boolean @default(false)
   createdAt   DateTime     @default(now())
 
   ownerId     Int

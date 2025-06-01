@@ -28,7 +28,7 @@ export default function ProfileLayout({ children }) {
 
     const pathname = usePathname()
 
-    return (
+    return(
         <div
         className={`${geistSans.variable} ${geistMono.variable} ${jost.variable} antialiased bg-white`}
         >
@@ -38,7 +38,9 @@ export default function ProfileLayout({ children }) {
             </div>
             <div className="flex min-h-screen mt-3">
                 <SideBar />
-                <main className="flex-1 px-6 py-4 mb-6">{children}</main>
+                <main className="flex-1 px-6 py-4 mb-6">
+                  {children}
+                </main>
             </div>
             <Footer />
         </div>

@@ -83,7 +83,7 @@ export default function HomeNavBar() {
             <span className="text-black mt-2 ml-1">{creditCount}</span>
           </div>) 
           }
-          <Link href="/Donations">
+          <Link href="/Products/Donations">
             <Image src="/images/donation-icon.png" alt="donation" width={27} height={27} className="-scale-x-100 ml-4 mt-1" />
           </Link>
           <Link href={isLoggedIn ? "/profile/wishlist" : "/loginPage"}>
