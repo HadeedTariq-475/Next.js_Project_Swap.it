@@ -94,6 +94,10 @@ export default function AddListedItem({onClose}) {
     const handleSave = async (e) => {
       e.preventDefault();
       
+      if (images.length === 0) {
+        alert("Please upload at least one image.");
+        return;
+      }
       // Step 1: Create product without images
       const payload = {
         ownerId: userID,
@@ -188,6 +192,19 @@ export default function AddListedItem({onClose}) {
     event.target.value = null;
   };
 
+  const handleRemoveImage = (index) => {
+    const updatedImages = [...images];
+    const updatedFiles = [...formData.newImageFiles];
+
+    updatedImages.splice(index, 1);
+    updatedFiles.splice(index, 1);
+
+    setImages(updatedImages);
+    setFormData(prev => ({
+      ...prev,
+      newImageFiles: updatedFiles,
+    }));
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-10">
@@ -201,42 +218,61 @@ export default function AddListedItem({onClose}) {
           </div>
         )}
 
-      <div className="bg-white p-8 rounded-lg shadow-md w-[35vw]  h-[95vh] border-8 border-purple-300 relative">
+      <div className="bg-white py-4 px-8 rounded-lg shadow-md w-[35vw]  h-[95vh] border-8 border-purple-300 relative">
         <Image src={"/images/close.png"} alt='close' width={15} height={15} className='absolute top-2 right-2 cursor-pointer' onClick={onClose}/>
         {/* Image Upload Section */}
-        {images.length < 3 && (
-          <>
-            <Image src={"/images/add-image.png"} alt="add-image" height={40} width={40} />
-            <button
-              type="button"
-              onClick={handleImageButtonClick}
-              className="bg-purple-500 text-white px-3 py-2 rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 text-sm"
-            >
-              Upload Image
-            </button>
-          </>
-        )}
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleImageSelect}
-          accept="image/*"
-          multiple
-          className="hidden"
-        />
-        <div className="mt-4 flex flex-wrap gap-4">
-          {images.map((img, idx) => (
-            <div key={idx} className="relative w-24 h-24">
-              <Image
-                src={img.url}
-                alt={`uploaded-${idx}`}
-                layout="fill"
-                objectFit="cover"
-                className="rounded-md"
-              />
+        <div className="mb-2">
+          <div className="border-2 border-dashed border-purple-300 rounded-md p-4 w-full min-h-[160px] max-h-[160px] overflow-y-auto">
+            {/* Upload button section */}
+            {images.length < 3 && (
+              <div className="flex flex-col justify-start items-center ">
+                <Image src="/images/add-image.png" alt="add-image" height={40} width={40} />
+                <button
+                  type="button"
+                  onClick={handleImageButtonClick}
+                  className="mt-2 bg-purple-500 text-white px-3 py-2 rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 text-sm"
+                >
+                  Upload Image
+                </button>
+              </div>
+            )}
+            
+            {/* Hidden input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageSelect}
+              accept="image/*"
+              multiple
+              className="hidden"
+            />
+
+            {/* Uploaded images */}
+            <div className="flex flex-wrap gap-3">
+              {images.map((img, idx) => (
+                <div key={idx} className="relative w-20 h-20 group">
+                  <Image
+                    src={img.url}
+                    alt={`uploaded-${idx}`}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(idx)}
+                    className="absolute top-0 right-0 bg-transparent text-black rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition"
+                    title="Remove image"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
+
+
 
         <form onSubmit={handleSave} className="space-y-3">
           {/* Title and Category */}
