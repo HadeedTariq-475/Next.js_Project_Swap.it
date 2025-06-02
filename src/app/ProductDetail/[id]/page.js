@@ -1,43 +1,53 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import NavBar from "/src/app/components/NavBar";
 import ProductGrid  from '/src/app/components/ProductGrid';
 import Footer from "/src/app/components/Footer";
 
-function ProductDetail() {
+function ProductDetail({}) {
+
+    //fetching data 
+    const { id } = useParams();
+    //hooks
+    const [product, setProduct] = useState(null);
+    const [isWishlisted, setIsWishlisted] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [products, setProducts] = useState([]);
+    const [history, setHistory] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    //whenever new product is laoded the image index i set to 0
+    useEffect(() => {
+        if (product?.images?.length) {
+            setSelectedIndex(0);
+        }
+    }, [product]);
+
+    //fetched id and whenevr new product is fetched ie id, that ids data gets loaded
+    useEffect(() => {
+        if (!id) return;
+
+        const fetchProduct = async () => {
+            const res = await fetch(`/api/products/${id}`);
+            const data = await res.json();
+            setProduct(data);
+        };
+
+        fetchProduct();
+    }, [id]);
+
+    if (!product) return <div>Loading...</div>; // Handle loading
+
 
     //The wihslist button just popping up 
-    const [isWishlisted, setIsWishlisted] = useState(false);
     const toggleWishlist = () => {
         setIsWishlisted(!isWishlisted);
     };
 
-    //dummy for thumnail pics
-    const imageList = [
-        "/images/product-Detail.jpg",
-        "/images/HomeCard_Donate.png",
-    ];
 
-    //Product Grid thingies as always
-        const [selectedIndex, setSelectedIndex] = useState(0);
-        const [products, setProducts] = useState([]);
-        const [history, setHistory] = useState([]);
-        const [currentIndex, setCurrentIndex] = useState(0);
-        useEffect(() => {
-            const productList = [
-                { id: 1, title: "VR Headset", image: "/images/p1dummy.jpg",  description: "Fully functional with no scratches or defects. Ideal for immersive gaming ....." },
-                { id: 5, title: "VR Headset", image: "/images/p1dummy.jpg",  description: "Fully functional with no scratches or defects. Ideal for immersive gaming ....." },
-                { id: 2, title: "Dual Side Controller", image: "/images/p2dummy.jpg" ,description: "Fully functional with no scratches or defects. Ideal for immersive gaming ....." },
-                { id: 3, title: "PS-Controller", image: "/images/p3dummy.jpg",  description: "Fully functional with no scratches or defects. Ideal for immersive gaming ....." },
-                { id: 4, title: "Another Product", image: "/images/p2dummy.jpg",  description: "Fully functional with no scratches or defects. Ideal for immersive gaming ....." },
-                { id: 6, title: "VR Headset", image: "/images/p1dummy.jpg",  description: "Fully functional with no scratches or defects. Ideal for immersive gaming ....." },
-                // Add more if needed
-            ];
-            setProducts(productList);
-            setHistory([0]); // start with the first product
-        }, []);
             //previous next by one logic 
             const visibleCount = 4;
             const currentProducts = products.length > 0
@@ -56,43 +66,42 @@ function ProductDetail() {
                 });
             };
 
-
-       
     //main as obvious
     return (
         <div className="relative bg-white min-h-screen bg-cover bg-center py-2">
             <NavBar />
             <h1 className="absolute top-24 left-1/2 transform -translate-x-1/2 text-3xl font-light z-30 text-black">
-                Play Station 5
+                {product.title}
             </h1>
             {/* Product detail */}
             <div className="flex flex-row justify-center items-start ">
                 {/* Left div starts here */}
                     <div className="flex flex-col items-center w-[400px] mt-20 mr-14">
                         <div className="w-[300px] h-[300px] relative rounded-lg overflow-hidden ">
+                            {product.images && product.images.length > 0 && (
                             <Image
-                                src={imageList[selectedIndex]}
+                                src={product.images[selectedIndex]}
                                 alt="Main Product"
                                 fill
                                 style={{ objectFit: "contain" }}
                                 className="transition duration-300"
                             />
+                            )}
                         </div>
                         <input
                             type="range"
                             min={0}
-                            max={imageList.length - 1}
+                            max={product.images?.length ? product.images.length - 1 : 0}
                             value={selectedIndex}
                             onChange={(e) => setSelectedIndex(Number(e.target.value))}
                             className="w-24 mt-2"
                         />
-                    
                         <div className="flex gap-3 mt-2">
-                            {imageList.map((img, index) => (
+                            {product.images && product.images.length > 0 && product.images.map((img, index) => (
                             <Image
                                 key={index}
                                 src={img}
-                                alt={`Thumbnail ${index + 1}`}
+                                alt="thumbnail"
                                 width={80}
                                 height={80}
                                 onClick={() => setSelectedIndex(index)}
@@ -123,20 +132,43 @@ function ProductDetail() {
                         </div>
                     </div>
                     <p className="text-black mb-4 mt-16">
-                        Lightly used PS5 in excellent condition. Fully functional, includes original DualSense controller and cables. No scratches, runs smoothly. Great for 4K gaming.
+                        {product.description}
                     </p>
                     <div className="flex items-center gap-5 text-black font-medium mb-6">
-                        <Image src="/images/price-tag.png" alt="Price" width={20} height={20} />
-                        <span>$450</span>
-                        <span className="text-xs text-gray-600">No Credits</span>
-                        <span className="text-xs text-gray-600">No exchange</span>
+                        <Image src="/images/price-tag.png" alt="Price" width={20} height={20}/>
+                        {product.type !== 'DONATE' && <span className="-ml-4">Rs.{product.price}</span>}
+                         <span className={`text-xs ${product.credits === 0 ? 'text-gray-600' : 'text-black'}`}>
+                            {product.credits === 0 ? 'No Credits' : `${product.credits} Credits`}
+                        </span>
+                        <span className={`text-xs ${!product.exchange ? 'text-gray-600' : 'text-black'}`}>
+                            {product.exchange ? 'Exchange Available' : 'No Exchange'}
+                        </span>
                     </div>
                     <div className="flex gap-3 mt-44 justify-center">
-                        <button className="bg-[#9C60F4] text-white px-6 py-2 rounded-md font-semibold">Cash</button>
-                        <button className="bg-[#ccadfa] text-white px-6 py-2 rounded-md font-semibold cursor-not-allowed">
+                        <button
+                            className={`px-6 py-2 rounded-md font-semibold ${
+                            product.type === 'DONATE' ? 'bg-[#ccadfa] text-white cursor-not-allowed' : 'bg-[#9C60F4] text-white'
+                            }`}
+                            disabled={product.type === 'DONATE'}
+                        >Cash</button>
+                        <button
+                            className={`px-6 py-2 rounded-md font-semibold ${
+                            product.exchange && product.type !== 'DONATE'
+                                ? 'bg-[#9C60F4] text-white'
+                                : 'bg-[#ccadfa] text-white cursor-not-allowed'
+                            }`}
+                            disabled={!product.exchange || product.type === 'DONATE'}
+                        >
                             Exchange
                         </button>
-                        <button className="bg-[#ccadfa] text-white px-6 py-2 rounded-md font-semibold cursor-not-allowed">
+                        <button
+                            className={`px-6 py-2 rounded-md font-semibold ${
+                            product.credits > 0 && product.type !== 'DONATE'
+                                ? 'bg-[#9C60F4] text-white'
+                                : 'bg-[#ccadfa] text-white cursor-not-allowed'
+                            }`}
+                            disabled={product.credits === 0 || product.type === 'DONATE'}
+                        >
                             Credit
                         </button>
                     </div>
@@ -144,16 +176,17 @@ function ProductDetail() {
             </div>
             {/* Seller Detail */}
             <div className="bg-[#EDE6F6] flex flex-col md:flex-row w-full max-w-[1000px] justify-start items-center mt-10 rounded-md lg:ml-36 md:ml-10 mb-14">
-                <Image
-                        src="/images/seller.png"
-                        alt="Seller"
-                        width={180}
-                        height={180}
-                        className="rounded-full lg:m-2 lg:ml-6 "
-                />
+                <div className="relative w-[180px] h-[180px] rounded-full overflow-hidden lg:m-2 lg:ml-6">
+                    <Image
+                        src={product.owner.profilePic || "/images/profile.jpg"}
+                        alt={`${product.owner.firstName} ${product.owner.lastName}`}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                    />
+                </div>
                 <div className="text-black ml-5 mr-60 w-[200px]">
-                    <strong>Edward William<br></br></strong>
-                    Member since 2024<br></br>
+                    <strong>{product.owner.firstName} {product.owner.lastName}<br></br></strong>
+                    Member since {new Date(product.owner.createdAt).getFullYear()}<br />
                     <strong><Link href={"/SellerProfile"}>View Profile</Link></strong><br></br><br></br>
                     <div className="flex justify-center p-0 bg-[#9C60F4] rounded-md text-white text-sm tracking-wider">
                         <button> 

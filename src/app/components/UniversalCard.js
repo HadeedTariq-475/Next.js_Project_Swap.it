@@ -14,14 +14,19 @@ function UniversalCard({ product }) {
         >
             {/* Image */}
             <div className="relative w-full h-28">
-                <Image
-                src={product.image}
-                alt={product.title}
-                fill
-                className="object-cover"
-                />
+                {product.images && product.images.length > 0 ? (
+                    <Image
+                    src={product.images[0]}
+                    alt={product.title}
+                    fill
+                    className="object-cover"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                    No Image
+                    </div>
+                )}
             </div>
-
             {/* IMage details */}
             <div className="bg-purple-100 p-4 space-y-2 text-center flex flex-grow flex-col">
                 {/* Title */}
