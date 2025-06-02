@@ -23,7 +23,7 @@ function UniversalCard({ product }) {
                     src={initialSrc}
                     alt={product.title}
                     fill
-                    className="object-contain"
+                    className="object-cover"
                     onError={() => {
                     // If first try failed and we haven't switched yet
                     if (!useUrl && product.images[0]?.url) {
