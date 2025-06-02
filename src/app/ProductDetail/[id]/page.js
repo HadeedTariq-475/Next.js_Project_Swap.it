@@ -3,13 +3,16 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import NavBar from "/src/app/components/NavBar";
 import ProductGrid  from '/src/app/components/ProductGrid';
 import Footer from "/src/app/components/Footer";
+import InboxPanel from "/src/app/components/InboxPanel";
 
 function ProductDetail({}) {
 
     //fetching data 
+    const router = useRouter()
     const { id } = useParams();
     //hooks
     const [product, setProduct] = useState(null);
@@ -18,7 +21,27 @@ function ProductDetail({}) {
     const [products, setProducts] = useState([]);
     const [history, setHistory] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isOpen, setIsOpen] = useState(false)
 
+
+    const OpenInbox = () => setIsOpen(true)
+    const CloseInbox = () => setIsOpen(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+     useEffect(() => {
+          // Check if userId cookie exists
+          const cookie = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('userId='));
+      
+          if (cookie) {
+            setIsLoggedIn(true);
+              
+            // Simulate fetching user data based on userId
+            // You can replace this with real API call
+            const userId = cookie.split('=')[1];
+            
+          }
+        }, []);
     //whenever new product is laoded the image index i set to 0
     useEffect(() => {
         if (product?.images?.length) {
@@ -39,6 +62,22 @@ function ProductDetail({}) {
         fetchProduct();
     }, [id]);
 
+    //fetching featured products
+    useEffect(() => {
+        const fetchRandomProducts = async () => {
+            try {
+            const res = await fetch(`/api/FeaturedProducts/`);
+            const data = await res.json();
+            setProducts(data);
+            setCurrentIndex(0); // reset index on new load
+            } catch (error) {
+            console.error('Error fetching random products:', error);
+            }
+        };
+
+        fetchRandomProducts();
+    }, []);
+
     if (!product) return <div>Loading...</div>; // Handle loading
 
 
@@ -47,24 +86,21 @@ function ProductDetail({}) {
         setIsWishlisted(!isWishlisted);
     };
 
-
-            //previous next by one logic 
-            const visibleCount = 4;
-            const currentProducts = products.length > 0
-            ? products.slice(currentIndex, currentIndex + visibleCount)
-            : [];
-            const nextProduct = () => {
-                setCurrentIndex((prevIndex) => {
-                    if (prevIndex + visibleCount >= products.length) return prevIndex; // already at end
-                    return prevIndex + 1; // move one step forward
-                });
-            };
-            const prevProduct = () => {
-                    setCurrentIndex((prevIndex) => {
-                    if (prevIndex <= 0) return 0; // already at start
-                    return prevIndex - 1; // move one step back
-                });
-            };
+    //previous next by one logic 
+    const visibleCount = 4;
+    const currentProducts = products.length > 0 ? products.slice(currentIndex, currentIndex + visibleCount): [];
+    const nextProduct = () => {
+        setCurrentIndex((prevIndex) => {
+            if (prevIndex + visibleCount >= products.length) return prevIndex; // already at end
+            return prevIndex + 1; // move one step forward
+        });
+    };
+    const prevProduct = () => {
+        setCurrentIndex((prevIndex) => {
+            if (prevIndex <= 0) return 0; // already at start
+            return prevIndex - 1; // move one step back
+        });
+    };
 
     //main as obvious
     return (
@@ -189,9 +225,21 @@ function ProductDetail({}) {
                     Member since {new Date(product.owner.createdAt).getFullYear()}<br />
                     <strong><Link href={`/SellerProfile/${product.owner.id}`}>View Profile</Link></strong><br></br><br></br>
                     <div className="flex justify-center p-0 bg-[#9C60F4] rounded-md text-white text-sm tracking-wider">
-                        <button> 
-                            Negotiate Deal 
+                        <button
+                            onClick={() => 
+                                {
+                                if(isLoggedIn){ 
+                                    OpenInbox
+                                } 
+                                else{
+                                    router.push("/loginPage")
+                                } 
+                                }
+                            }
+                        > 
+                        Negotiate Deal 
                         </button>
+                        {isOpen && <InboxPanel onClose={CloseInbox}/>}
                         <Image
                             src="/images/message-icon.png"
                             alt="Seller"

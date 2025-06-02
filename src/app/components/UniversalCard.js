@@ -8,10 +8,7 @@ function UniversalCard({ product }) {
     const isDonated = product.type === "Donate";
 
     return (
-        <div
-            
-            className="rounded-2xl shadow-lg bg-white overflow-hidden w-[200px] cursor-pointer transition-transform hover:scale-105 hover:shadow-black flex flex-col"
-        >
+        <div className="w-[200px] h-[290px] rounded-2xl shadow-lg bg-white overflow-hidden cursor-pointer transition-transform hover:scale-105 hover:shadow-black flex flex-col">
             {/* Image */}
             <div className="relative w-full h-28">
                 {product.images && product.images.length > 0 ? (
@@ -28,7 +25,7 @@ function UniversalCard({ product }) {
                 )}
             </div>
             {/* IMage details */}
-            <div className="bg-purple-100 p-4 space-y-2 text-center flex flex-grow flex-col">
+            <div className="bg-purple-100 p-4 flex flex-col flex-grow justify-between overflow-hidden">
                 {/* Title */}
                 <h3 className="text-black font-semibold text-base">
                 {product.title}
@@ -64,17 +61,14 @@ function UniversalCard({ product }) {
                 </div>
 
                 {/* Description */}
-                <p className="text-xs text-gray-700 text-start">
-                    {product.description.length > 80
-                        ? product.description.slice(0, 80) + "..."
-                        : product.description}
+                <p className="text-xs text-gray-700 text-start overflow-hidden text-ellipsis line-clamp-2">
+                    {product.description}
                 </p>
-
                 {/* Category and Credits */}
                 {
                     !isDonated && (
                         <div className="flex justify-between items-center pt-2 text-sm font-medium text-purple-700">
-                            <span className="pl-1">{product.type}</span>
+                            <span className="pl-1">{product.exchange ? 'Exchangeable' : 'Non exchangeable'}</span>
                             <div className="flex items-center gap-1 text-black">
                                 <Image
                                 src="/images/credits.png"

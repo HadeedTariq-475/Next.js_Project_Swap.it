@@ -34,27 +34,102 @@ const categoryMap = {
     "Others": "OTHERS",
 };
 function AllCategories() {
-    //Sates
-    const [selectedCategory, setSelectedCategory] = useState("All Categories");
-    const [selectedFilters, setFilters] = useState({
+    //---------------------------STATES----------------------------//
+    const [selectedCategory, setSelectedCategory] = useState("All Categories"); //Sidebar (Category filters)
+    const [selectedFilters, setFilters] = useState({                            //Vertical Filters
       type: "Buy",
       credits: "All",
       priceMin: 0,
       priceMax: 1000000,
     });
-    // For product grid
-    const [products, setProducts] = useState([]);
-    //For page number
-    const [currentPage, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1); ///////
-    const productsPerPage = 4;
-    const selectedCategoryKey = categoryMap[selectedCategory];
-    // Functions
-    function handleSearch(event) {
-      console.log(event.target.value);
+    const [searchQuery, setSearchQuery] = useState("");              //searchbar
+    const [isSearching, setIsSearching] = useState(false);          //searchbar
+    const [products, setProducts] = useState([]);                  // For product grid
+    const [currentPage, setPage] = useState(1);                   //Setting Pages
+    const [totalPages, setTotalPages] = useState(1); 
+
+    const productsPerPage = 4;                                    //Products per page
+    
+    //---------------------------FUNCTIONS----------------------------//
+    
+    //(Search submission Function (called on search button or erased)
+    async function handleSearchSubmit() {
+      if (!searchQuery.trim()) {
+        setIsSearching(false);
+        setPage(1);
+        return; // no search query, do normal loading
+      }
+
+      setIsSearching(true);
+      setPage(1); // reset page to 1
+
+      const queryParams = new URLSearchParams();
+      queryParams.append("search", searchQuery);
+      queryParams.append("page", 1);
+      queryParams.append("limit", 1000); // large limit or some max for search results
+
+      const res = await fetch(`/api/products?${queryParams}`);
+      const data = await res.json();
+      setProducts(data.products);
+      setTotalPages(data.totalPages);
     }
-     /*** TRIGGER FETCH ON FILTER/ CATEGORY CHANGE ***/
+    
+    //(Normal page revival Function)ie. after seacrh you want normal thingies page
+    async function fetchNormalProducts() {
+      const queryParams = new URLSearchParams();
+
+      if (selectedCategory && selectedCategory !== "All Categories") {
+        queryParams.append("category", categoryMap[selectedCategory]);
+      }
+
+      if (selectedFilters.type && selectedFilters.type !== "All") {
+        queryParams.append("type", selectedFilters.type.toLowerCase());
+      }
+      if (selectedFilters.credits && selectedFilters.credits !== "All") {
+        queryParams.append("credits", selectedFilters.credits);
+      }
+      queryParams.append("priceMin", selectedFilters.priceMin);
+      queryParams.append("priceMax", selectedFilters.priceMax);
+
+      queryParams.append("page", currentPage);
+      queryParams.append("limit", productsPerPage);
+
+      const res = await fetch(`/api/products?${queryParams.toString()}`);
+      const data = await res.json();
+      setProducts(data.products);
+      setTotalPages(data.totalPages);
+    }
+
+        
+    //---------------------------EFFECTS----------------------------//
+    
+    //(Effect: Handle search query changes (with debounce and reset))
     useEffect(() => {
+      if (!searchQuery.trim()) {
+        // Reset search mode and page
+        setIsSearching(false);
+        setPage(1);
+
+        // Just fetch normal products from backend again by triggering page change or calling fetch here
+        // Since useEffect that depends on [selectedCategory, selectedFilters, currentPage] may not run if currentPage was already 1,
+        // call your fetch function directly here or force a page reset to trigger normal fetch
+
+        // Simplest: Just call your normal fetch here:
+        fetchNormalProducts();
+
+        return;
+      }
+      setIsSearching(true);
+      setPage(1);
+      const delayDebounce = setTimeout(() => {
+        handleSearchSubmit();
+      }, 300);
+      return () => clearTimeout(delayDebounce);
+    }, [searchQuery]);
+
+     //(TRIGGER FETCH ON FILTER/ CATEGORY CHANGE)//
+    useEffect(() => {
+      if (isSearching) return;
       const fetchProducts = async () => {
         try {
           const queryParams = new URLSearchParams();
@@ -98,24 +173,13 @@ function AllCategories() {
       fetchProducts();
     }, [selectedCategory, selectedFilters, currentPage]);  // fetch again if page changes
 
-    /*  Filter logic is actually doing the heavy lifting here hehehehehe
-      This function filters the products based on the selected category, credits, type, and price range, and stores the result in `filteredProducts`.
-      which is later passed to the ProductGrid component for rendering. So, you gnna sse it in where i called pg component
-    */
+    //(Filter products for display)//
     const filteredProducts = products.filter((p) => {
-      const matchCategory =
-        selectedCategory === "All Categories" || p.category === selectedCategoryKey;
-
-      const matchCredits =
-        selectedFilters.credits === "All" || Number(p.credits) === Number(selectedFilters.credits);
-
-      const matchPrice =
-        p.price >= selectedFilters.priceMin && p.price <= selectedFilters.priceMax;
-
-      return matchCategory && matchCredits && matchPrice;
+      const matchTitle = isSearching ? true: p.title.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchTitle;
     });
 
-    //here comes the main we all were waiting for...probably not
+    //here comes the UI we all were waiting for...probably not
 
     return (
         <div className='bg-white min-h-screen bg-cover bg-center '>
@@ -123,7 +187,11 @@ function AllCategories() {
                 <NavBar className='p-4'></NavBar>
             </div>
             <Banner imageSrc="/images/allCategories.png" pageTitle="All Categories"></Banner>
-            <Search onChange={handleSearch}></Search>
+            {/* <Search onChange={handleSearch}></Search> */}
+            <Search 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+              onSearch={handleSearchSubmit} // triggered by button/icon
+            />
             <div className="flex pl-4 pb-6">
                 <CategorySideBar
                     selectedCategory={selectedCategory}
