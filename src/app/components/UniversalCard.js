@@ -1,9 +1,16 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { useState } from "react";
 
 
 function UniversalCard({ product }) {
+
+    const [useUrl, setUseUrl] = useState(false);
+    // Determine the initial src
+    const initialSrc = product.images && product.images.length > 0 
+        ? (useUrl ? product.images[0].url : product.images[0]) 
+        : null;
 
     const isDonated = product.type === "Donate";
 
@@ -13,10 +20,16 @@ function UniversalCard({ product }) {
             <div className="relative w-full h-28">
                 {product.images && product.images.length > 0 ? (
                     <Image
-                    src={product.images[0]}
+                    src={initialSrc}
                     alt={product.title}
                     fill
-                    className="object-cover"
+                    className="object-contain"
+                    onError={() => {
+                    // If first try failed and we haven't switched yet
+                    if (!useUrl && product.images[0]?.url) {
+                        setUseUrl(true);
+                    }
+                    }}
                     />
                 ) : (
                     <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">

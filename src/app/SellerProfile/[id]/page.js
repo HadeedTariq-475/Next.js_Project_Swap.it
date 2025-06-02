@@ -20,42 +20,37 @@ function SellerProfile({}) {
     const [seller, setSeller] = useState(null);
     
     useEffect(() => {
-        const cookie = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('userId='));
+        if (!id) return;
 
-        if (!cookie) return;
+        const cookie = document.cookie.split('; ').find(row => row.startsWith('userId='));
+        if (cookie) setIsLoggedIn(true);
 
-        
-        setIsLoggedIn(true);
-
-        // Fetch user
-        axios.get('/api/User', { params: { id: id } })
+        axios.get('/api/User', { params: { id } })
             .then(res => {
-            setSeller(res.data);
-            alert(JSON.stringify(seller))
-            console.log("Fetched user:", res.data);
+                setSeller(res.data);
+                console.log("Fetched seller:", res.data);
             })
             .catch(err => {
-            console.error('Failed to fetch user:', err);
+                console.error('Failed to fetch seller:', err);
             });
 
-        // Fetch products (BUY and DONATE) in parallel
         Promise.all([
-            axios.get('/api/userProducts', { params: { id: id, type: "BUY" } }),
-            axios.get('/api/userProducts', { params: { id: id, type: "DONATE" } }),
+            axios.get('/api/userProducts', { params: { id, type: "BUY" } }),
+            axios.get('/api/userProducts', { params: { id, type: "DONATE" } }),
         ])
             .then(([res1, res2]) => {
-            const products1 = res1.data;
-            const products2 = res2.data;
-            const combinedProducts = [...products1, ...products2];
-            setProducts(combinedProducts);
-            console.log("Combined products:", combinedProducts);
+                setProducts([...res1.data, ...res2.data]);
+                
             })
             .catch(err => {
-            console.error("Failed to fetch products:", err);
+                console.error("Failed to fetch products:", err);
             });
-    }, []);
+    }, [id]);
+
+    if (!seller) 
+        return (<div className='flex justify-center items-center text-black'>
+            <p>Loading seller profile...</p>
+                </div>)
      
 
   return (
@@ -72,13 +67,15 @@ function SellerProfile({}) {
                     className='rounded-lg'
                 />
             </div>
-            <Image
-                src={ seller.profilePic == null ? "/images/profile.jpg" : seller.profilePic} 
-                alt="Seller Profile"
-                width={200}
-                height={200}
-                className="rounded-full absolute top-44 left-10"
-            />
+            <div className="absolute top-44 left-10 w-[200px] h-[200px] rounded-full overflow-hidden">
+                <Image
+                    src={seller.profilePic == null ? "/images/profile.jpg" : seller.profilePic}
+                    alt="Seller Profile"
+                    fill
+                    className="object-cover rounded-full"
+                />
+            </div>
+
             <div className='text-black ml-64 -mt-12 flex justify-between items-center mr-16 '>
                 <div>
                     <strong className='text-xl'>{seller.firstName} {seller.lastName}</strong><br></br>
@@ -115,7 +112,7 @@ function SellerProfile({}) {
                     </select>
                 </div>
             </div>
-            <div className='ml-14'>
+            <div className='ml-14 mb-8'>
                 <ProductGrid products={products} />
             </div>
         </div>
