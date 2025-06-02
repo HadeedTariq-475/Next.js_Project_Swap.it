@@ -57,7 +57,7 @@ export default function CategoryFilterBar({ filters, setFilters, showType = true
                             className="border border-gray-500 rounded-md w-20 px-2 py-1 focus:outline-none font-medium"
                             value={filters.priceMin}
                             // This binds the value of the input field to the current value stored in the filters.priceMin part of the state.
-                            onChange={(event) => setFilters({ ...filters, priceMin: event.target.value })}
+                            onChange={(event) => setFilters({ ...filters, priceMin: Number(event.target.value) })}
                         />
                         <span className="text-gray-600">to</span>
                         <input

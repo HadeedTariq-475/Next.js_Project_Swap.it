@@ -1,6 +1,5 @@
 "use client";
-import React , {useState} from 'react';
-import { useEffect } from 'react';
+import React , {useState, useEffect } from 'react';
 import Image from 'next/image';
 
 import Banner from '/src/app/components/Banner';
@@ -11,7 +10,6 @@ import CategoryFilterBar from '/src/app/components/CategoryFilterBar';
 import ProductGrid  from '/src/app/components/ProductGrid';
 import Footer from '/src/app/components/Footer';
 
-
 /* SO, basically gnna tell flow cuz hehe i made it complicated(tho it was not needed)heheh
   1. Products are loaded via useEffect() and stored in products state.
   2. Filters are controlled by two states:
@@ -21,123 +19,101 @@ import Footer from '/src/app/components/Footer';
     - It checks that each product matches the selected category, credits, type, and price range.
   4. The filtered product list is passed into <ProductGrid /> for rendering.
 */
-
-
-
-
-
+const categoryMap = {
+    "All Categories": null, 
+    "Electronics": "ELECTRONICS",
+    "Furniture": "FURNITURE",
+    "AutoMobile": "AUTOMOBILE",
+    "Clothing & Fashion": "CLOTHING_FASHION",
+    "Makeup & Beauty": "MAKEUP_BEAUTY",
+    "Sports & Hobby": "SPORTS_HOBBY",
+    "Books": "BOOKS",
+    "Kids": "KIDS",
+    "Property": "PROPERTY",
+    "Mobiles": "MOBILES",
+    "Others": "OTHERS",
+};
 function AllCategories() {
-
-    // Function to handle search input changes
-    function handleSearch(event) {
-        console.log(event.target.value);
-    }
-
-
-
-    /*
-      For sidebar 
-      State to manage the selected category from the sidebar
-      Default category is set to "All Categories"
-      This will be used to filter products based on the selected category
-    */
+    //Sates
     const [selectedCategory, setSelectedCategory] = useState("All Categories");
-
-
-
-    /*
-      For filters
-      Same as above, but for filters
-      type an dstuff will be changed according to the selected type of product
-    */
     const [selectedFilters, setFilters] = useState({
-        type: "Buy",
-        credits: "All",
-        priceMin: 0,
-        priceMax: 10000,
+      type: "Buy",
+      credits: "All",
+      priceMin: 0,
+      priceMax: 1000000,
     });
-
-
     // For product grid
     const [products, setProducts] = useState([]);
-
     //For page number
     const [currentPage, setPage] = useState(1);
-    const productsPerPage = 9;
-
-
-    // Fake data load for checking the UI
+    const [totalPages, setTotalPages] = useState(1); ///////
+    const productsPerPage = 4;
+    const selectedCategoryKey = categoryMap[selectedCategory];
+    // Functions
+    function handleSearch(event) {
+      console.log(event.target.value);
+    }
+     /*** TRIGGER FETCH ON FILTER/ CATEGORY CHANGE ***/
     useEffect(() => {
-    setProducts([
-      {
-        id: 1,
-        title: "Virtual Reality Headset",
-        credits: 2,
-        price: 1500,
-        type: "Buy",
-        category: "Electronics",
-        image: "/images/p1dummy.jpg",
-        description: "Experience immersive gaming with this high-quality VR headset.",
-      },
-      {
-        id: 2,
-        title: "Dual Side Conroller",
-        credits: 1,
-        price: 500,
-        type: "Donate",
-        category: "Kids",
-        image: "/images/p2dummy.jpg",
-        description: "Fully functional with no scratches or defects. Ideal for immersive gaming .....",
-      },
-      {
-        id: 3,
-        title: "PS-Controller",
-        credits: 0,
-        price: 500,
-        type: "Exchange",
-        category: "Others",
-        image: "/images/p3dummy.jpg",
-        description: "A high-quality PS controller in excellent condition, perfect for gaming enthusiasts.Moreover, it is compatible with various gaming consoles and PCs, ensuring a seamless gaming experience.",
-      },
-       {
-        id: 4,
-        title: "PS-Controller",
-        credits: 0,
-        price: 500,
-        type: "Exchange",
-        category: "Others",
-        image: "/images/p3dummy.jpg",
-        description: "A high-quality PS controller in excellent condition, perfect for gaming enthusiasts.Moreover, it is compatible with various gaming consoles and PCs, ensuring a seamless gaming experience.",
-      },
-    ]);
-  }, []);
+      const fetchProducts = async () => {
+        try {
+          const queryParams = new URLSearchParams();
 
+          if (selectedCategory && selectedCategory !== "All Categories") {
+            queryParams.append("category", categoryMap[selectedCategory]);
+          }
 
+          if (selectedFilters.type && selectedFilters.type !== "All") {
+            queryParams.append("type", selectedFilters.type.toLowerCase());
+          }
+          if (selectedFilters.credits && selectedFilters.credits !== "All") {
+            queryParams.append("credits", selectedFilters.credits);
+          }
+          queryParams.append("priceMin", selectedFilters.priceMin);
+          queryParams.append("priceMax", selectedFilters.priceMax);
 
-  /*  Filter logic is actually doing the heavy lifting here hehehehehe
-    This function filters the products based on the selected category, credits, type, and price range, and stores the result in `filteredProducts`.
-    which is later passed to the ProductGrid component for rendering. So, you gnna sse it in where i called pg component
-  */
-  const filteredProducts = products.filter((p) => {
-    const matchCategory =
-      selectedCategory === "All Categories" || p.category === selectedCategory;
+          queryParams.append("page", currentPage);
+          queryParams.append("limit", productsPerPage);
 
-    const matchCredits =
-      selectedFilters.credits === "All" || Number(p.credits) === Number(selectedFilters.credits);
+          const url = `/api/products?${queryParams.toString()}`;
 
-    const matchType =
-      selectedFilters.type === "Buy" || p.type === selectedFilters.type;
+          const res = await fetch(url);
+          if (!res.ok) {
+            const error = await res.json();
+            console.error("API error:", error);
+            return;
+          }
+          const data = await res.json();
 
-    const matchPrice =
-      p.price >= selectedFilters.priceMin && p.price <= selectedFilters.priceMax;
+          // now data.products contains only current page products
+          setProducts(data.products);
 
-    return matchCategory && matchCredits && matchType && matchPrice;
-  });
+          // store total pages so you can disable Next button when at last page
+          setTotalPages(data.totalPages);
+        } catch (error) {
+          console.error("Fetch error:", error.message);
+        }
+      };
 
-  //
-    const lastPageIndex = currentPage * productsPerPage;
-    const firstPageIndex = lastPageIndex - productsPerPage;
-    const currentProducts = filteredProducts.slice(firstPageIndex, lastPageIndex);
+      fetchProducts();
+    }, [selectedCategory, selectedFilters, currentPage]);  // fetch again if page changes
+
+    /*  Filter logic is actually doing the heavy lifting here hehehehehe
+      This function filters the products based on the selected category, credits, type, and price range, and stores the result in `filteredProducts`.
+      which is later passed to the ProductGrid component for rendering. So, you gnna sse it in where i called pg component
+    */
+    const filteredProducts = products.filter((p) => {
+      const matchCategory =
+        selectedCategory === "All Categories" || p.category === selectedCategoryKey;
+
+      const matchCredits =
+        selectedFilters.credits === "All" || Number(p.credits) === Number(selectedFilters.credits);
+
+      const matchPrice =
+        p.price >= selectedFilters.priceMin && p.price <= selectedFilters.priceMax;
+
+      return matchCategory && matchCredits && matchPrice;
+    });
 
     //here comes the main we all were waiting for...probably not
 
@@ -155,38 +131,28 @@ function AllCategories() {
                 />
                 <div className="flex-1">
                   <CategoryFilterBar filters={selectedFilters} setFilters={setFilters} />
-                  <ProductGrid products={currentProducts} />
+                  <ProductGrid products={filteredProducts} />
                   {/* page buttons */}
                   <div className="flex justify-center items-center gap-4 mt-6 text-sm m-5">
-                    <button
-                      onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                      className=" disabled:opacity-50"
-                    >
-                      <Image
-                        src="/images/prev.png" 
-                        alt="Next" 
-                        width={20} 
-                        height={20}
-                      />
-                    </button>
+                    <div className="flex justify-center items-center gap-4 mt-6 text-sm m-5">
+                      <button
+                        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="disabled:opacity-50"
+                      >
+                        <Image src="/images/prev.png" alt="Prev" width={20} height={20} />
+                      </button>
 
-                    <span className="text-purple-600 font-medium">{`Page ${currentPage}`}</span>
+                      <span className="text-purple-600 font-medium">{`Page ${currentPage} of ${totalPages}`}</span>
 
-                    <button
-                      onClick={() => setPage((prev) =>
-                        Math.min(prev + 1, Math.ceil(filteredProducts.length / productsPerPage))
-                      )}
-                      disabled={currentPage === Math.ceil(filteredProducts.length / productsPerPage)}
-                      className=" disabled:opacity-50"
-                    >
-                      <Image
-                        src="/images/next.png" 
-                        alt="Next" 
-                        width={20} 
-                        height={20}
-                      />
-                    </button>
+                      <button
+                        onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className="disabled:opacity-50"
+                      >
+                        <Image src="/images/next.png" alt="Next" width={20} height={20} />
+                      </button>
+                    </div>
                   </div>
                 </div>
             </div>
