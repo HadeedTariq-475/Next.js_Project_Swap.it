@@ -1,6 +1,5 @@
 "use client";
-import React , {useState} from 'react';
-import { useEffect } from 'react';
+import React , {useState, useEffect} from 'react';
 import Image from 'next/image';
 
 import Banner from '/src/app/components/Banner';
@@ -11,95 +10,143 @@ import CategoryFilterBar from '/src/app/components/CategoryFilterBar';
 import ProductGrid  from '/src/app/components/ProductGrid';
 import Footer from '/src/app/components/Footer';
 
+const categoryMap = {
+    "All Categories": null, 
+    "Electronics": "ELECTRONICS",
+    "Furniture": "FURNITURE",
+    "AutoMobile": "AUTOMOBILE",
+    "Clothing & Fashion": "CLOTHING_FASHION",
+    "Makeup & Beauty": "MAKEUP_BEAUTY",
+    "Sports & Hobby": "SPORTS_HOBBY",
+    "Books": "BOOKS",
+    "Kids": "KIDS",
+    "Property": "PROPERTY",
+    "Mobiles": "MOBILES",
+    "Others": "OTHERS",
+};
+
 function Donations() {
-
+    //---------------------------STATES----------------------------//
     // Function to handle search input changes
-    function handleSearch(event) {
-        console.log(event.target.value);
-    }
-
     const [selectedCategory, setSelectedCategory] = useState("All Categories");
-
     const [selectedFilters, setFilters] = useState({
         type: "Donate",
         credits: "All",
     });
+    const [searchQuery, setSearchQuery] = useState("");              //searchbar
+    const [isSearching, setIsSearching] = useState(false);          //searchbar
+    const [products, setProducts] = useState([]);                  // For product grid
+    const [currentPage, setPage] = useState(1);                   //Setting Pages
+    const [totalPages, setTotalPages] = useState(1); 
 
-
-    // For product grid
-    const [products, setProducts] = useState([]);
-
-    //For page number
-    const [currentPage, setPage] = useState(1);
     const productsPerPage = 9;
 
+    //---------------------------FUNCTIONS----------------------------//
+    
+    //(Search submission Function (called on search button or erased)
+    async function handleSearch() {
+      if (!searchQuery.trim()) {
+        setIsSearching(false);
+        setPage(1);
+        return; // no search query, do normal loading
+      }
 
-    // Fake data load for checking the UI
-    useEffect(() => {
-    setProducts([
-      {
-        id: 1,
-        title: "Virtual Reality Headset",
-        credits: 2,
-        price: 1500,
-        type: "Buy",
-        category: "Electronics",
-        image: "/images/p1dummy.jpg",
-        description: "Experience immersive gaming with this high-quality VR headset.",
-      },
-      {
-        id: 2,
-        title: "Dual Side Conroller",
-        credits: 1,
-        price: 500,
-        type: "Donate",
-        category: "Kids",
-        image: "/images/p2dummy.jpg",
-        description: "Fully functional with no scratches or defects. Ideal for immersive gaming .....",
-      },
-      {
-        id: 3,
-        title: "PS-Controller",
-        credits: 0,
-        price: 500,
-        type: "Exchange",
-        category: "Others",
-        image: "/images/p3dummy.jpg",
-        description: "A high-quality PS controller in excellent condition, perfect for gaming enthusiasts.Moreover, it is compatible with various gaming consoles and PCs, ensuring a seamless gaming experience.",
-      },
-       {
-        id: 4,
-        title: "PS-Controller",
-        credits: 0,
-        price: 500,
-        type: "Donate",
-        category: "Others",
-        image: "/images/p3dummy.jpg",
-        description: "A high-quality PS controller in excellent condition, perfect for gaming enthusiasts.Moreover, it is compatible with various gaming consoles and PCs, ensuring a seamless gaming experience.",
-      },
-    ]);
-  }, []);
-  
+      setIsSearching(true);
+      setPage(1); // reset page to 1
 
+      const queryParams = new URLSearchParams();
+      queryParams.append("type", "Donate");
+      queryParams.append("search", searchQuery);
+      queryParams.append("page", 1);
+      queryParams.append("limit", 1000); // large limit or some max for search results
+
+      const res = await fetch(`/api/products?${queryParams}`);
+      const data = await res.json();
+      setProducts(data.products);
+      setTotalPages(data.totalPages);
+    }
+    
+    //(Normal page revival Function)ie. after seacrh you want normal thingies page
+    async function fetchNormalProducts() {
+      const queryParams = new URLSearchParams();
+
+      if (selectedCategory && selectedCategory !== "All Categories") {
+        queryParams.append("category", categoryMap[selectedCategory]);
+      }
+      if (selectedFilters.credits && selectedFilters.credits !== "All") {
+        queryParams.append("credits", selectedFilters.credits);
+      }
+      queryParams.append("type", "Donate");
+      queryParams.append("page", currentPage);
+      queryParams.append("limit", productsPerPage);
+      const res = await fetch(`/api/products?${queryParams.toString()}`);
+      const data = await res.json();
+      setProducts(data.products);
+      setTotalPages(data.totalPages);
+    }
+    //---------------------------EFFECTS----------------------------//
+        
+        //(Effect: Handle search query changes (with debounce and reset))
+        useEffect(() => {
+          if (!searchQuery.trim()) {
+            setIsSearching(false);
+            setPage(1);
+            fetchNormalProducts();
+            return;
+          }
+          setIsSearching(true);
+          setPage(1);
+          const delayDebounce = setTimeout(() => {
+            handleSearch();
+          }, 300);
+          return () => clearTimeout(delayDebounce);
+        }, [searchQuery]);
+    
+         //(TRIGGER FETCH ON FILTER/ CATEGORY CHANGE)//
+        useEffect(() => {
+          if (isSearching) return;
+          const fetchProducts = async () => {
+            try {
+              const queryParams = new URLSearchParams();
+    
+              if (selectedCategory && selectedCategory !== "All Categories") {
+                queryParams.append("category", categoryMap[selectedCategory]);
+              }
+              if (selectedFilters.credits && selectedFilters.credits !== "All") {
+                queryParams.append("credits", selectedFilters.credits);
+              }
+              queryParams.append("type", "Donate");
+              queryParams.append("page", currentPage);
+              queryParams.append("limit", productsPerPage);
+    
+              const url = `/api/products?${queryParams.toString()}`;
+    
+              const res = await fetch(url);
+              if (!res.ok) {
+                const error = await res.json();
+                console.error("API error:", error);
+                return;
+              }
+              const data = await res.json();
+    
+              if (data.products.length === 0 && currentPage !== 1) {
+                setPage(1);
+              } else {
+                setProducts(data.products);
+                setTotalPages(data.totalPages);
+              }
+            } catch (error) {
+              console.error("Fetch error:", error.message);
+            }
+          };
+    
+          fetchProducts();
+        }, [selectedCategory, selectedFilters, currentPage]);  // fetch again if page changes
+    //---------------------------EFFECTS ENd----------------------------//
   const filteredProducts = products.filter((p) => {
-    const matchCategory =
-      selectedCategory === "All Categories" || p.category === selectedCategory;
-
-    const matchCredits =
-      selectedFilters.credits === "All" || Number(p.credits) === Number(selectedFilters.credits);
-
-    const matchType = 
-    p.type === selectedFilters.type;
-
-
-    return matchCategory && matchCredits && matchType;
+    const matchTitle = isSearching ? true: p.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchTitle;
   });
-
-  //
-    const lastPageIndex = currentPage * productsPerPage;
-    const firstPageIndex = lastPageIndex - productsPerPage;
-    const currentProducts = filteredProducts.slice(firstPageIndex, lastPageIndex);
-
     //here comes the main we all were waiting for...probably not
 
     return (
@@ -108,7 +155,10 @@ function Donations() {
                 <NavBar className='p-4'></NavBar>
             </div>
             <Banner imageSrc="/images/donations.png" pageTitle="Donations"></Banner>
-            <Search onChange={handleSearch}></Search>
+            <Search 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+              onSearch={handleSearch} 
+            />
             <div className="flex pl-4 pb-6">
                 <CategorySideBar
                     selectedCategory={selectedCategory}
@@ -116,7 +166,12 @@ function Donations() {
                 />
                 <div className="flex-1">
                   <CategoryFilterBar filters={selectedFilters} setFilters={setFilters} showType={false} showPrice={false} />
-                  <ProductGrid products={currentProducts} />
+                  <div style={{ minHeight: '350px' }}>
+                    <ProductGrid products={products} />
+                    {products.length === 0 && (
+                    <p className="text-center text-gray-500 mt-4">No related products found.</p>
+                    )}
+                  </div>
                   {/* page buttons */}
                   <div className="flex justify-center items-center gap-4 mt-6 text-sm m-5">
                     <button

@@ -160,11 +160,12 @@ function AllCategories() {
           }
           const data = await res.json();
 
-          // now data.products contains only current page products
-          setProducts(data.products);
-
-          // store total pages so you can disable Next button when at last page
-          setTotalPages(data.totalPages);
+          if (data.products.length === 0 && currentPage !== 1) {
+            setPage(1);
+          } else {
+            setProducts(data.products);
+            setTotalPages(data.totalPages);
+          }
         } catch (error) {
           console.error("Fetch error:", error.message);
         }
@@ -187,7 +188,6 @@ function AllCategories() {
                 <NavBar className='p-4'></NavBar>
             </div>
             <Banner imageSrc="/images/allCategories.png" pageTitle="All Categories"></Banner>
-            {/* <Search onChange={handleSearch}></Search> */}
             <Search 
               onChange={(e) => setSearchQuery(e.target.value)} 
               onSearch={handleSearchSubmit} // triggered by button/icon
@@ -199,7 +199,12 @@ function AllCategories() {
                 />
                 <div className="flex-1">
                   <CategoryFilterBar filters={selectedFilters} setFilters={setFilters} />
-                  <ProductGrid products={filteredProducts} />
+                  <div style={{ minHeight: '350px' }}>
+                    <ProductGrid products={filteredProducts} />
+                    {filteredProducts.length === 0 && (
+                      <p className="text-center text-gray-500 mt-4">No related products found.</p>
+                    )}
+                  </div>
                   {/* page buttons */}
                   <div className="flex justify-center items-center gap-4 mt-6 text-sm m-5">
                     <div className="flex justify-center items-center gap-4 mt-6 text-sm m-5">

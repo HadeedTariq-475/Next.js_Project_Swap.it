@@ -53,7 +53,9 @@ function UniversalCard({ product }) {
                                     height={20}
                                     alt="price tag"
                                 />
-                                {product.price}$   
+                                <div className="product-price">
+                                    {product.price === 0 ? "FREE" : `Rs.${product.price}`}
+                                </div>
                             </span>
                         )
                     }
