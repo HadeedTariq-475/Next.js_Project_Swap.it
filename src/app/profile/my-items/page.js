@@ -14,10 +14,22 @@ export default function MyItems() {
   const [showAddDonationItemForm, setShowAddDonationItemForm] = useState(false);
   const [Listedproducts, setListedProducts] = useState([]);
   const [Donatedproducts, setDonatedProducts] = useState([]);
+  const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
     fetchUserProducts();
   }, []);
+
+  const handleEditItem = (item) => {
+    setEditingItem(item);
+    if(item.type === "BUY"){
+      setShowAddItemForm(true);
+    }
+    else{
+      setShowAddDonationItemForm(true)
+    }
+    
+  };
 
   const fetchUserProducts = () => {
       const cookie = document.cookie
@@ -55,6 +67,8 @@ export default function MyItems() {
         .catch(err => {
           console.error('Failed to fetch products:', err);
         });
+
+        setEditingItem(null);
       
     }
   
@@ -66,7 +80,7 @@ export default function MyItems() {
       <div className='flex items-center gap-6'>
         <p className='text-black'>Listed Items</p>
         <button className='text-white bg-purple-500 border-none outline-none px-5 py-2 rounded-2xl' onClick={() => setShowAddItemForm(true)}>New +</button>
-        {showAddItemForm && <AddListedItem onClose={() => setShowAddItemForm(false)} onItemAdded={fetchUserProducts}/>}
+        {showAddItemForm && <AddListedItem onClose={() => setShowAddItemForm(false)} onItemAdded={fetchUserProducts} editingItem={editingItem}  />}
       </div>
 
       <div className='grid grid-cols-3 gap-x-4 mt-4 mb-8 min-h-48'>
@@ -82,6 +96,7 @@ export default function MyItems() {
               credits={product.credits.toString()}
               exchange_status={product.exchange ? "Exchangable" : "Not Exchangable"}
               onItemDelete={fetchUserProducts}
+              onEditClick={handleEditItem}
             />
           ))
         ) : (
@@ -101,7 +116,7 @@ export default function MyItems() {
       <div className='flex items-center gap-6 mt-2'>
         <p className='text-black'>Donated Items</p>
         <button className='text-white bg-purple-500 border-none outline-none px-5 py-2 rounded-2xl' onClick={() => setShowAddDonationItemForm(true)}>New +</button>
-        {showAddDonationItemForm && <AddDonatedItems onClose={() => setShowAddDonationItemForm(false)} onItemAdded={fetchUserProducts}/>}
+        {showAddDonationItemForm && <AddDonatedItems onClose={() => setShowAddDonationItemForm(false)} onItemAdded={fetchUserProducts} editingItem={editingItem}/>}
       </div>
 
       <div className='grid grid-cols-3 gap-x-4 mt-4 mb-8 min-h-48'>
@@ -115,10 +130,11 @@ export default function MyItems() {
               desc={product.description}
               credits={product.credits.toString()}
               onItemDelete={fetchUserProducts}
+              onEditClick={handleEditItem}
             />
           ))
         ) : (
-          <p className="col-span-3 text-center text-black pt-20">No products listed for sale yet.</p>
+          <p className="col-span-3 text-center text-black pt-20">No products Donated yet.</p>
         )}
       </div>
       

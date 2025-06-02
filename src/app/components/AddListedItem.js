@@ -41,6 +41,29 @@ export default function AddListedItem({onClose,onItemAdded,editingItem = null}) 
   });
 
   useEffect(() => {
+    if (editingItem) {
+      setFormData({
+        title: editingItem.title || "",
+        description: editingItem.description || "",
+        price: editingItem.price || 0,
+        credits: editingItem.credits || 0,
+        type: editingItem.type || "BUY",
+        category: editingItem.category || "",
+        exchange: editingItem.exchange || false,
+        status: editingItem.status || "ACTIVE",
+        newImageFiles: [], // you can't load existing images as files
+      });
+
+      // Show image previews (but without file objects)
+      if (editingItem.images && editingItem.images.length > 0) {
+        const imagePreviews = editingItem.images.map(url => ({ file: null, url }));
+        setImages(imagePreviews);
+      }
+    }
+  }, [editingItem]);
+
+
+  useEffect(() => {
       const cookie = document.cookie
         .split('; ')
         .find(row => row.startsWith('userId='));
@@ -90,15 +113,14 @@ export default function AddListedItem({onClose,onItemAdded,editingItem = null}) 
       return uploadedUrls;
     };
 
-  // Handle form submit
     const handleSave = async (e) => {
       e.preventDefault();
-      
+
       if (images.length === 0) {
         alert("Please upload at least one image.");
         return;
       }
-      // Step 1: Create product without images
+
       const payload = {
         ownerId: userID,
         title: formData.title,
@@ -112,35 +134,47 @@ export default function AddListedItem({onClose,onItemAdded,editingItem = null}) 
       };
 
       try {
-        const res = await axios.post('/api/userProducts', payload);
+        let productId;
 
-        if (res.data.success) {
-          const productId = res.data.product.id;  // <- get the auto-increment ID
-          // Step 2: Upload images using productId as folder name
-          let imageUrls = [];
-
-          if (formData.newImageFiles.length > 0) {
-            const uploadedUrls = await uploadImages(productId); // Pass productId here
-            if (!uploadedUrls) return;
-            imageUrls = [...imageUrls, ...uploadedUrls];
+        if (editingItem) {
+          // Updating an existing item
+          const res = await axios.put(`/api/userProducts/${editingItem.id}`, payload);
+          if (!res.data.success) {
+            setErrors(res.data.error || "Failed to update product.");
+            return;
           }
+          productId = editingItem.id;
+        } else {
+          // Creating a new item
+          const res = await axios.post('/api/userProducts', payload);
+          if (!res.data.success) {
+            setErrors(res.data.error || "Failed to upload product.");
+            return;
+          }
+          productId = res.data.product.id;
+        }
 
-           // Step 3: POST image URLs + productId to save image records
+        //  Upload new images
+        let newImageUrls = [];
+        if (formData.newImageFiles.length > 0) {
+          const uploadedUrls = await uploadImages(productId);
+          if (!uploadedUrls) return;
+          newImageUrls = [...uploadedUrls];
+
+          // Store them in DB
           await axios.post('/api/products_images', {
             productId,
-            images: imageUrls,
+            images: newImageUrls,
           });
-
-          setSuccessMessage("Product uploaded successfully!");
-          setTimeout(() => {
-            onClose();
-          }, 3000);
-          onItemAdded(); 
-        } else {
-          setErrors(res.data.error || "Failed to upload product.");
         }
+
+        setSuccessMessage(editingItem ? "Product updated successfully!" : "Product uploaded successfully!");
+        setTimeout(() => onClose(), 3000);
+        onItemAdded(); 
+        
+
       } catch (error) {
-        setErrors("Error uploading product: " + error.message);
+        setErrors("Error saving product: " + error.message);
       }
     };
 
@@ -193,12 +227,21 @@ export default function AddListedItem({onClose,onItemAdded,editingItem = null}) 
     event.target.value = null;
   };
 
-  const handleRemoveImage = (index) => {
+  const handleRemoveImage = async (index) => {
+    const imgToRemove = images[index];
+    
+    // Optional: remove from Supabase + DB if it's an old image
+    if (!imgToRemove.file && editingItem) {
+      await axios.delete(`/api/products_images`, {
+        data: { productId: editingItem.id, imageUrl: imgToRemove.url }
+      });
+    }
+
     const updatedImages = [...images];
     const updatedFiles = [...formData.newImageFiles];
 
     updatedImages.splice(index, 1);
-    updatedFiles.splice(index, 1);
+    if (imgToRemove.file) updatedFiles.splice(index, 1); // only remove from newImageFiles if it's a new file
 
     setImages(updatedImages);
     setFormData(prev => ({
@@ -206,6 +249,7 @@ export default function AddListedItem({onClose,onItemAdded,editingItem = null}) 
       newImageFiles: updatedFiles,
     }));
   };
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-10">

@@ -4,10 +4,12 @@ import Image from 'next/image'
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function ListedDonationCard({id, img_src,title,desc,credits,onItemDelete}) {
+
+export default function ListedDonationCard({id, img_src,title,desc,credits,onItemDelete,onEditClick}) {
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState("");
+
 
   useEffect(() => {
         if (successMessage || errors) {
@@ -18,6 +20,23 @@ export default function ListedDonationCard({id, img_src,title,desc,credits,onIte
           return () => clearTimeout(timer);
         }
       }, [successMessage, errors]);
+
+  const handleEdit = async () => {
+    try {
+      const response = await axios.get(`/api/products/${id}`);
+      const product = response.data
+
+      if (!product) {
+        setErrors("Product not found");
+        return;
+      }
+
+      onEditClick(product);  //  pass to parent to open the edit form
+    } catch (err) {
+      console.error("Error:", err);
+      setErrors(err.response?.data?.error || "Failed to fetch product.");
+    }
+  };
 
   const handleDelete = async () => {
     const confirmDelete = confirm('Are you sure you want to delete this item?');
@@ -61,9 +80,8 @@ export default function ListedDonationCard({id, img_src,title,desc,credits,onIte
         
                 <div className='w-full mt-2 flex justify-end'>
                     <div className='flex items-center gap-x-1'>
-                        <div className='bg-purple-500 w-6 h-6 rounded-sm cursor-pointer'>
+                        <div className='bg-purple-500 w-6 h-6 rounded-sm cursor-pointer' onClick={handleEdit}>
                           <Image src="/images/edit-item.png" alt="edit item" width={18} height={18} className='mt-0.5 ml-1'/>
-                          {showAddItemForm && <AddListedItem onClose={() => setShowAddItemForm(false)} onItemAdded={fetchUserProducts} onClick={handleEdit}/>}
                         </div>
                         <div className='bg-red-600 w-6 h-6 rounded-sm cursor-pointer' onClick={handleDelete}>
                           <Image src="/images/delete.png" alt="edit item" width={18} height={18} className='mt-0.5 ml-1'/>

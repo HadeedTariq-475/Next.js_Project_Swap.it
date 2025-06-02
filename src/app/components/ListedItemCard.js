@@ -4,11 +4,10 @@ import Image from 'next/image'
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-export default function ListedItemCard({ id, img_src, title, desc, price, credits, exchange_status,onItemDelete }) {
+export default function ListedItemCard({ id, img_src, title, desc, price, credits, exchange_status,onItemDelete,onEditClick }) {
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState("");
-  const [showAddItemForm, setShowAddItemForm] = useState(false);
 
   useEffect(() => {
         if (successMessage || errors) {
@@ -20,10 +19,24 @@ export default function ListedItemCard({ id, img_src, title, desc, price, credit
         }
       }, [successMessage, errors]);
 
-  const handleEdit = () => {
-    setEditingItem(product); // contains all fields including images
-    setShowForm(true);
+  const handleEdit = async () => {
+    try {
+      const response = await axios.get(`/api/products/${id}`);
+      const product = response.data
+
+
+      if (!product) {
+        setErrors("Product not found");
+        return;
+      }
+
+      onEditClick(product);  //  pass to parent to open the edit form
+    } catch (err) {
+      console.error("Error:", err);
+      setErrors(err.response?.data?.error || "Failed to fetch product.");
+    }
   };
+
 
   const handleDelete = async () => {
     const confirmDelete = confirm('Are you sure you want to delete this item?');
@@ -86,9 +99,8 @@ export default function ListedItemCard({ id, img_src, title, desc, price, credit
           <div className='flex justify-between items-center mt-2 gap-3'>
             <p className='text-black text-xs truncate'>{exchange_status}</p>
             <div className='flex items-center gap-x-1'>
-              <div className='bg-purple-500 w-6 h-6 rounded-sm flex justify-center items-center cursor-pointer'>
+              <div className='bg-purple-500 w-6 h-6 rounded-sm flex justify-center items-center cursor-pointer' onClick={handleEdit}>
                 <Image src="/images/edit-item.png" alt="edit item" width={18} height={18} />
-                {showAddItemForm && <AddListedItem onClose={() => setShowAddItemForm(false)} onItemAdded={fetchUserProducts} onClick={handleEdit}/>}
               </div>
               <div className='bg-red-600 w-6 h-6 rounded-sm flex justify-center items-center cursor-pointer' onClick={handleDelete}>
                 <Image src="/images/delete.png" alt="delete item" width={18} height={18} />

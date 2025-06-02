@@ -10,10 +10,17 @@ export default function DonatedItems() {
 
     const [showAddDonationItemForm, setShowAddDonationItemForm] = useState(false);
     const [Donatedproducts, setDonatedProducts] = useState([]);
+    const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
     fetchUserProducts();
   }, []);
+
+  const handleEditItem = (item) => {
+    setEditingItem(item);
+    setShowAddDonationItemForm(true)
+    
+  };
 
   const fetchUserProducts = () => {
       const cookie = document.cookie
@@ -37,6 +44,8 @@ export default function DonatedItems() {
         .catch(err => {
           console.error('Failed to fetch products:', err);
         });
+
+        setEditingItem(null);
       
     }
 
@@ -46,7 +55,7 @@ export default function DonatedItems() {
             <div className='flex justify-between items-start mb-4'>
               <h1 className="text-black text-2xl font-bold mb-6">Donated Items</h1>
               <button className='text-white bg-purple-500 border-none outline-none px-5 py-2 rounded-2xl' onClick={() => setShowAddDonationItemForm(true)}>New +</button>
-              {showAddDonationItemForm && <AddDonatedItems onClose={() => setShowAddDonationItemForm(false)} onItemAdded={fetchUserProducts}/>}
+              {showAddDonationItemForm && <AddDonatedItems onClose={() => setShowAddDonationItemForm(false)} onItemAdded={fetchUserProducts} editingItem={editingItem}/>}
             </div>
       
             <div className='grid grid-cols-3 gap-x-4 mt-4 mb-8 min-h-48'>
@@ -60,10 +69,11 @@ export default function DonatedItems() {
                           desc={product.description}
                           credits={product.credits.toString()}
                           onItemDelete={fetchUserProducts}
+                          onEditClick={handleEditItem}
                         />
                       ))
                     ) : (
-                      <p className="col-span-3 text-center text-black pt-56">No products listed for sale yet.</p>
+                      <p className="col-span-3 text-center text-black pt-56">No products Donated yet.</p>
                     )}
                   </div>
     </div>
