@@ -63,6 +63,7 @@ export default function ListedDonationCard({id, img_src,title,desc,credits,onIte
                     <div className='flex items-center gap-x-1'>
                         <div className='bg-purple-500 w-6 h-6 rounded-sm cursor-pointer'>
                           <Image src="/images/edit-item.png" alt="edit item" width={18} height={18} className='mt-0.5 ml-1'/>
+                          {showAddItemForm && <AddListedItem onClose={() => setShowAddItemForm(false)} onItemAdded={fetchUserProducts} onClick={handleEdit}/>}
                         </div>
                         <div className='bg-red-600 w-6 h-6 rounded-sm cursor-pointer' onClick={handleDelete}>
                           <Image src="/images/delete.png" alt="edit item" width={18} height={18} className='mt-0.5 ml-1'/>

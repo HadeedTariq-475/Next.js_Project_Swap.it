@@ -8,6 +8,7 @@ export default function ListedItemCard({ id, img_src, title, desc, price, credit
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState("");
+  const [showAddItemForm, setShowAddItemForm] = useState(false);
 
   useEffect(() => {
         if (successMessage || errors) {
@@ -18,6 +19,11 @@ export default function ListedItemCard({ id, img_src, title, desc, price, credit
           return () => clearTimeout(timer);
         }
       }, [successMessage, errors]);
+
+  const handleEdit = () => {
+    setEditingItem(product); // contains all fields including images
+    setShowForm(true);
+  };
 
   const handleDelete = async () => {
     const confirmDelete = confirm('Are you sure you want to delete this item?');
@@ -82,6 +88,7 @@ export default function ListedItemCard({ id, img_src, title, desc, price, credit
             <div className='flex items-center gap-x-1'>
               <div className='bg-purple-500 w-6 h-6 rounded-sm flex justify-center items-center cursor-pointer'>
                 <Image src="/images/edit-item.png" alt="edit item" width={18} height={18} />
+                {showAddItemForm && <AddListedItem onClose={() => setShowAddItemForm(false)} onItemAdded={fetchUserProducts} onClick={handleEdit}/>}
               </div>
               <div className='bg-red-600 w-6 h-6 rounded-sm flex justify-center items-center cursor-pointer' onClick={handleDelete}>
                 <Image src="/images/delete.png" alt="delete item" width={18} height={18} />

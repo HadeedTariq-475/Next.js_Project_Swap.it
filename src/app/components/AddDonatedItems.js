@@ -20,7 +20,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 
-export default function AddDonatedItems({onClose,onItemAdded}) {
+export default function AddDonatedItems({onClose,onItemAdded,editingItem = null}) {
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState("");

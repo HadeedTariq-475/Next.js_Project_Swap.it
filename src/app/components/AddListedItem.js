@@ -20,7 +20,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 
-export default function AddListedItem({onClose,onItemAdded}) {
+export default function AddListedItem({onClose,onItemAdded,editingItem = null}) {
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState("");
