@@ -40,3 +40,113 @@ export async function POST(req) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+export async function GET(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+    const type = searchParams.get('type');
+
+    if (!id || !type) {
+      return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
+    }
+
+    let products = [];
+
+    if (type === "BUY") {
+      products = await prisma.product.findMany({
+        where: {
+          ownerId: parseInt(id),
+          type: "BUY",
+          status: "ACTIVE"
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          price: true,
+          credits: true,
+          type: true,
+          exchange: true,
+          images: {
+            select: {
+              url: true
+            }
+          }
+        }
+      });
+    } else if (type === "DONATE") {
+      products = await prisma.product.findMany({
+        where: {
+          ownerId: parseInt(id),
+          type: "DONATE",
+          status: "ACTIVE"
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          price: true,
+          credits: true,
+          type: true,
+          exchange: true,
+          images: {
+            select: {
+              url: true
+            }
+          }
+        }
+      });
+    } else {
+      return NextResponse.json({ error: 'Invalid product type' }, { status: 400 });
+    }
+
+    return NextResponse.json(products, { status: 200 });
+
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('ID');
+    console.log('Received ID for deletion:', id);
+
+    if (!id) {
+      return NextResponse.json({ error: 'Missing product ID' }, { status: 400 });
+    }
+
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) {
+      return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 });
+    }
+
+    const existingProduct = await prisma.product.findUnique({
+      where: { id: parsedId },
+    });
+
+    if (!existingProduct) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    // Delete related product images first
+    await prisma.productImage.deleteMany({
+      where: { productId: parsedId },
+    });
+
+    // Then delete the product itself
+    await prisma.product.delete({
+      where: { id: parsedId },
+    });
+
+    return NextResponse.json({ success: true, message: 'Product deleted successfully' }, { status: 200 });
+
+  } catch (error) {
+    console.error('Error deleting product:', error.message);
+    console.error(error.stack);
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+  }
+}

@@ -20,7 +20,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 
-export default function AddDonatedItems({onClose}) {
+export default function AddDonatedItems({onClose,onItemAdded}) {
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState("");
@@ -159,6 +159,7 @@ export default function AddDonatedItems({onClose}) {
           setTimeout(() => {
             onClose();
           }, 3000);
+          onItemAdded();
         } else {
           setErrors(res.data.error || "Failed to upload product.");
         }

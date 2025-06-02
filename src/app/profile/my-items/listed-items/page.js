@@ -3,46 +3,69 @@
 import React from 'react'
 import ListedItemCard from '@/app/components/ListedItemCard'
 import AddListedItem from '@/app/components/AddListedItem'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 export default function ListedItems() {
 
   const [showAddItemForm, setShowAddItemForm] = useState(false);
+  const [Listedproducts, setListedProducts] = useState([]);
+
+  useEffect(() => {
+      fetchUserProducts();
+    }, []);
+  
+    const fetchUserProducts = () => {
+        const cookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('userId='));
+  
+        if (!cookie) return; // just in case
+  
+        const userId = parseInt(cookie.split('=')[1]);
+  
+        axios.get('/api/userProducts', {
+            params: { 
+              id: userId,
+              type: "BUY"
+            }
+          })
+          .then(res => {
+            setListedProducts(res.data);  // <-- Store response in the products array
+            console.log("Fetched products:", res.data); 
+          })
+          .catch(err => {
+            console.error('Failed to fetch products:', err);
+          }); 
+      }
 
   return (
     <div>
       <div className='flex justify-between items-start mb-4'>
         <h1 className="text-black text-2xl font-bold mb-6">Listed Items</h1>
         <button className='text-white bg-purple-500 border-none outline-none px-5 py-2 rounded-2xl' onClick={() => setShowAddItemForm(true)}>New +</button>
-        {showAddItemForm && <AddListedItem onClose={() => setShowAddItemForm(false)} />}
+        {showAddItemForm && <AddListedItem onClose={() => setShowAddItemForm(false)} onItemAdded={fetchUserProducts}/>}
       </div>
 
-      <div className='grid grid-cols-3 gap-x-6 gap-y-8'>
-        <ListedItemCard img_src={"/images/pc1.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"450"} credits={"2"} exchange_status={"Exchangable"}/>
-        <ListedItemCard img_src={"/images/pc2.webp"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"250"} credits={"3"} exchange_status={"Not Exchangable"}/>
-        <ListedItemCard img_src={"/images/pc3.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"750"} credits={"1"} exchange_status={"Exchangable"}/>
-
-        <ListedItemCard img_src={"/images/pc1.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"450"} credits={"2"} exchange_status={"Exchangable"}/>
-        <ListedItemCard img_src={"/images/pc2.webp"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"250"} credits={"3"} exchange_status={"Not Exchangable"}/>
-        <ListedItemCard img_src={"/images/pc3.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"750"} credits={"1"} exchange_status={"Exchangable"}/>
-
-        <ListedItemCard img_src={"/images/pc1.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"450"} credits={"2"} exchange_status={"Exchangable"}/>
-        <ListedItemCard img_src={"/images/pc2.webp"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"250"} credits={"3"} exchange_status={"Not Exchangable"}/>                
-        <ListedItemCard img_src={"/images/pc3.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"750"} credits={"1"} exchange_status={"Exchangable"}/>
-        
-        <ListedItemCard img_src={"/images/pc1.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"450"} credits={"2"} exchange_status={"Exchangable"}/>
-        <ListedItemCard img_src={"/images/pc2.webp"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"250"} credits={"3"} exchange_status={"Not Exchangable"}/>
-        <ListedItemCard img_src={"/images/pc3.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"750"} credits={"1"} exchange_status={"Exchangable"}/>
-
-        <ListedItemCard img_src={"/images/pc1.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"450"} credits={"2"} exchange_status={"Exchangable"}/>
-        <ListedItemCard img_src={"/images/pc2.webp"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"250"} credits={"3"} exchange_status={"Not Exchangable"}/>
-        <ListedItemCard img_src={"/images/pc3.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"750"} credits={"1"} exchange_status={"Exchangable"}/>
-
-        <ListedItemCard img_src={"/images/pc1.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"450"} credits={"2"} exchange_status={"Exchangable"}/>
-        <ListedItemCard img_src={"/images/pc2.webp"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"250"} credits={"3"} exchange_status={"Not Exchangable"}/>                
-        <ListedItemCard img_src={"/images/pc3.jpg"} title={"Used shoes"} desc={"Pretty useful for killing and other issues. You want your chingu dead Just a click away"} price={"750"} credits={"1"} exchange_status={"Exchangable"}/>
-
-      </div>
+          <div className='grid grid-cols-3 gap-x-4 gap-y-6 mt-4 mb-8 min-h-48'>
+              {Listedproducts.length > 0 ? (
+                Listedproducts.slice().reverse().map((product, index) => (
+                  <ListedItemCard
+                    key={index}
+                    id={product.id}
+                    img_src={product.images?.[0]?.url || "/images/placeholder.jpg"}  // fallback image
+                    title={product.title}
+                    desc={product.description}
+                    price={product.price.toString()}
+                    credits={product.credits.toString()}
+                    exchange_status={product.exchange ? "Exchangable" : "Not Exchangable"}
+                    onItemDelete={fetchUserProducts}
+                  />
+                ))
+              ) : (
+                <p className="col-span-3 text-center text-black pt-56">No products listed for sale yet.</p>
+              )}
+            </div>
     </div>
   )
 }

@@ -20,7 +20,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 
-export default function AddListedItem({onClose}) {
+export default function AddListedItem({onClose,onItemAdded}) {
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState("");
@@ -135,6 +135,7 @@ export default function AddListedItem({onClose}) {
           setTimeout(() => {
             onClose();
           }, 3000);
+          onItemAdded(); 
         } else {
           setErrors(res.data.error || "Failed to upload product.");
         }
