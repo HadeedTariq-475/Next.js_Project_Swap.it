@@ -8,6 +8,7 @@ export async function GET(req) {
   const category = searchParams.get('category');
   const type = searchParams.get('type');
   const credits = searchParams.get('credits');
+  const search = searchParams.get('search')
 
   const priceMin = parseInt(searchParams.get('priceMin')) || 0;
   const priceMax = parseInt(searchParams.get('priceMax')) || 1000000;
@@ -28,7 +29,16 @@ export async function GET(req) {
     if (category && category !== 'All Categories') {
       where.category = category;
     }
-
+    //searching
+    if (search && search.trim() !== '') {
+      where = {
+        ...where,
+        title: {
+          contains: search,
+          mode: 'insensitive', // case-insensitive
+        },
+      };
+    } 
     if (type) {
       if (type.toLowerCase() === 'buy') {
         where.type = 'BUY';
