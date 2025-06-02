@@ -229,7 +229,7 @@ function ProductDetail({}) {
                             onClick={() => 
                                 {
                                 if(isLoggedIn){ 
-                                    OpenInbox
+                                    OpenInbox()
                                 } 
                                 else{
                                     router.push("/loginPage")
