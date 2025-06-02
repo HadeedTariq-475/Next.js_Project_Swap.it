@@ -149,7 +149,7 @@ function ProductDetail({}) {
                         </div>
                     </div>
                 {/* left div ends here */}
-                <div className="bg-[#EDE6F6] p-6 rounded-3xl rounded-bl-none w-[400px] h-[500px] relative">
+                <div className="bg-[#EDE6F6] p-6 rounded-3xl rounded-bl-none w-[400px] min-h-[500px] relative">
                     <div className="absolute left-0 top-1/4 h-[375px] w-1 bg-[#706f6f]"></div>
                     <div className="flex justify-between items-start mb-4">
                         <div></div>
@@ -167,7 +167,7 @@ function ProductDetail({}) {
                             />
                         </div>
                     </div>
-                    <p className="text-black mb-4 mt-16">
+                    <p className="text-black mb-4 mt-16 line-clamp-6 overflow-auto">
                         {product.description}
                     </p>
                     <div className="flex items-center gap-5 text-black font-medium mb-6">
@@ -199,11 +199,11 @@ function ProductDetail({}) {
                         </button>
                         <button
                             className={`px-6 py-2 rounded-md font-semibold ${
-                            product.credits > 0 && product.type !== 'DONATE'
+                            product.credits > 0 
                                 ? 'bg-[#9C60F4] text-white'
                                 : 'bg-[#ccadfa] text-white cursor-not-allowed'
                             }`}
-                            disabled={product.credits === 0 || product.type === 'DONATE'}
+                            disabled={product.credits === 0}
                         >
                             Credit
                         </button>

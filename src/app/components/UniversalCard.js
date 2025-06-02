@@ -38,7 +38,7 @@ function UniversalCard({ product }) {
                 )}
             </div>
             {/* IMage details */}
-            <div className="bg-purple-100 p-4 flex flex-col flex-grow justify-between overflow-hidden">
+            <div className="bg-purple-100 p-4 flex flex-col flex-grow justify-between overflow-hidden min-h-0">
                 {/* Title */}
                 <h3 className="text-black font-semibold text-base">
                 {product.title}
@@ -76,8 +76,9 @@ function UniversalCard({ product }) {
                 </div>
 
                 {/* Description */}
-                <p className="text-xs text-gray-700 text-start overflow-hidden text-ellipsis line-clamp-2">
+                <p className="text-xs text-gray-700 text-start overflow-hidden text-ellipsis line-clamp-2 break-words">
                     {product.description}
+
                 </p>
                 {/* Category and Credits */}
                 {
