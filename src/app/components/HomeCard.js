@@ -1,10 +1,21 @@
 import React from 'react'
 import Image from 'next/image'
+import { useRouter } from "next/navigation";
 
 export default function HomeCard({src,title,desc,label}) {
+  const router = useRouter();
+     const handleClick = () => {
+    if (title === "BUY NOW") {
+      router.push(`/Products/AllCategories?category=ALL`);
+    } else if (title === "DONATE NOW") {
+      router.push(`/Products/Donations`);
+    } else if (title === "EXCHANGE NOW") {
+      router.push(`/Products/AllCategories?filter=exchange`);
+    }
+  };
   return (
     <div>
-        <div className='flex flex-col items-center'>
+        <div className='flex flex-col items-center' onClick={handleClick}>
             <div className='w-56 h-72 bg-white rounded-3xl shadow-md shadow-gray-400'>
               <Image src={src} alt='Buy Now' width={224} height={100}  className='rounded-t-3xl'/>
               <div className='py-2 px-4'>

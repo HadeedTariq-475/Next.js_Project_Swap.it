@@ -1,6 +1,8 @@
 "use client";
 import React , {useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
+
 
 import Banner from '/src/app/components/Banner';
 import Search from '/src/app/components/Search';   
@@ -35,13 +37,13 @@ const categoryMap = {
 };
 function AllCategories() {
     //---------------------------STATES----------------------------//
-    const [selectedCategory, setSelectedCategory] = useState("All Categories"); //Sidebar (Category filters)
-    const [selectedFilters, setFilters] = useState({                            //Vertical Filters
-      type: "Buy",
-      credits: "All",
-      priceMin: 0,
-      priceMax: 1000000,
-    });
+    //const [selectedCategory, setSelectedCategory] = useState("All Categories"); //Sidebar (Category filters)
+    // const [selectedFilters, setFilters] = useState({                            //Vertical Filters
+    //   type: "Buy",
+    //   credits: "All",
+    //   priceMin: 0,
+    //   priceMax: 1000000,
+    // });
     const [searchQuery, setSearchQuery] = useState("");              //searchbar
     const [isSearching, setIsSearching] = useState(false);          //searchbar
     const [products, setProducts] = useState([]);                  // For product grid
@@ -49,7 +51,30 @@ function AllCategories() {
     const [totalPages, setTotalPages] = useState(1); 
 
     const productsPerPage = 4;                                    //Products per page
-    
+
+    //doing home page navigation all here
+    const searchParams = useSearchParams();   
+    const urlCategory = searchParams.get('category');
+    const urlFilter = searchParams.get('filter');
+    const [selectedCategory, setSelectedCategory] = useState(() => {
+      // if URL param matches your keys, set it, else default to All Categories
+      if (urlCategory) {
+        // Reverse lookup categoryMap to find the display name for the value
+        const categoryEntry = Object.entries(categoryMap).find(
+          ([key, val]) => val === urlCategory.toUpperCase()
+        );
+        return categoryEntry ? categoryEntry[0] : "All Categories";
+      }
+      return "All Categories";
+    });
+    //
+    const [selectedFilters, setFilters] = useState(() => ({
+      type: urlFilter ? urlFilter.charAt(0).toUpperCase() + urlFilter.slice(1).toLowerCase() : "Buy",
+      credits: "All",
+      priceMin: 0,
+      priceMax: 1000000,
+    }));
+
     //---------------------------FUNCTIONS----------------------------//
     
     //(Search submission Function (called on search button or erased)

@@ -121,9 +121,9 @@ export default function HomePage() {
           
           <HomeCategoryItem src={"/images/Electronics.png"} category={"Electronics"} />
           <HomeCategoryItem src={"/images/Furniture.png"} category={"Furniture"} />
-          <HomeCategoryItem src={"/images/AutoMobile.png"} category={"Automobile"}/>
-          <HomeCategoryItem src={"/images/Clothing.png"} category={"Clothing"}/>
-          <HomeCategoryItem src={"/images/Sports.png"} category={"Sports"} start={"col-start-2"}/>
+          <HomeCategoryItem src={"/images/AutoMobile.png"} category={"AutoMobile"}/>
+          <HomeCategoryItem src={"/images/Clothing.png"} category={"Clothing_Fashion"}/>
+          <HomeCategoryItem src={"/images/Sports.png"} category={"Sports_Hobby"} start={"col-start-2"}/>
           <HomeCategoryItem src={"/images/Books.png"} category={"Books"} start={"col-start-4"}/>
           <HomeCategoryItem src={"/images/Others.png"} category={"Others"} start={"col-start-6"}/>
        
