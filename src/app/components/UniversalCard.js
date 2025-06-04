@@ -82,13 +82,8 @@ function UniversalCard({ product }) {
                 </p>
                 {/* Category and Credits */}
                 {
-                    !isDonated && (
                         <div className="flex justify-between items-center pt-2 text-sm font-medium text-purple-700">
-                            {
-                                isDonated && (
-                                    <span className="pl-1">{product.exchange ? 'Exchangeable' : 'Non exchangeable'}</span>
-                                )
-                            }
+                            <span className="pl-1">{product.exchange ? 'Exchangeable' : 'Non exchangeable'}</span>
                             <div className="flex items-center gap-1 text-black">
                                 <Image
                                 src="/images/credits.png"
@@ -99,8 +94,9 @@ function UniversalCard({ product }) {
                                 {product.credits}
                             </div>
                         </div>
-                    )
+                    
                 }
+                
             </div>
         </div>
     );

@@ -11,7 +11,7 @@ export async function GET(req) {
   const search = searchParams.get('search')
 
   const priceMin = parseInt(searchParams.get('priceMin')) || 0;
-  const priceMax = parseInt(searchParams.get('priceMax')) || 1000000;
+  const priceMax = parseInt(searchParams.get('priceMax')) || 10000000;
 
   // Pagination params
   const page = parseInt(searchParams.get('page')) || 1;  

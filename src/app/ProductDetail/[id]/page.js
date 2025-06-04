@@ -37,7 +37,6 @@ function ProductDetail({}) {
             setIsLoggedIn(true);
               
             // Simulate fetching user data based on userId
-            // You can replace this with real API call
             const userId = cookie.split('=')[1];
             
           }
@@ -113,14 +112,15 @@ function ProductDetail({}) {
             <div className="flex flex-row justify-center items-start ">
                 {/* Left div starts here */}
                     <div className="flex flex-col items-center w-[400px] mt-20 mr-14">
-                        <div className="w-[300px] h-[300px] relative rounded-lg overflow-hidden ">
+                        <div className="w-[300px] h-[300px] relative rounded-lg overflow-hidden flex justify-center items-center ">
                             {product.images && product.images.length > 0 && (
                             <Image
                                 src={product.images[selectedIndex]}
                                 alt="Main Product"
-                                fill
-                                style={{ objectFit: "contain" }}
-                                className="transition duration-300"
+                                width={300}
+                                height={300}
+                                style={{ objectFit: "contain"  }}
+                                className="object-contain transition duration-300 rounded-lg"
                             />
                             )}
                         </div>
@@ -212,7 +212,7 @@ function ProductDetail({}) {
             </div>
             {/* Seller Detail */}
             <div className="bg-[#EDE6F6] flex flex-col md:flex-row w-full max-w-[1000px] justify-start items-center mt-10 rounded-md lg:ml-36 md:ml-10 mb-14">
-                <div className="relative w-[180px] h-[180px] rounded-full overflow-hidden lg:m-2 lg:ml-6">
+                <div className="relative w-[180px] h-[155px] rounded-full overflow-hidden lg:m-2 lg:ml-6">
                     <Image
                         src={product.owner.profilePic || "/images/profile.jpg"}
                         alt={`${product.owner.firstName} ${product.owner.lastName}`}

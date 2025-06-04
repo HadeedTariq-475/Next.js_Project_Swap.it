@@ -50,7 +50,7 @@ function AllCategories() {
     const [currentPage, setPage] = useState(1);                   //Setting Pages
     const [totalPages, setTotalPages] = useState(1); 
 
-    const productsPerPage = 4;                                    //Products per page
+    const productsPerPage = 16;                                    //Products per page
 
     //doing home page navigation all here
     const searchParams = useSearchParams();   
@@ -72,7 +72,7 @@ function AllCategories() {
       type: urlFilter ? urlFilter.charAt(0).toUpperCase() + urlFilter.slice(1).toLowerCase() : "Buy",
       credits: "All",
       priceMin: 0,
-      priceMax: 1000000,
+      priceMax: 10000000,
     }));
 
     //---------------------------FUNCTIONS----------------------------//
