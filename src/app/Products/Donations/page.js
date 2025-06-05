@@ -39,7 +39,7 @@ function Donations() {
     const [currentPage, setPage] = useState(1);                   //Setting Pages
     const [totalPages, setTotalPages] = useState(1); 
 
-    const productsPerPage = 9;
+    const productsPerPage = 16;
 
     //---------------------------FUNCTIONS----------------------------//
     

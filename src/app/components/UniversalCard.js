@@ -38,7 +38,7 @@ function UniversalCard({ product }) {
                 )}
             </div>
             {/* IMage details */}
-            <div className="bg-purple-100 p-4 flex flex-col flex-grow justify-between overflow-hidden">
+            <div className="bg-purple-100 p-4 flex flex-col flex-grow justify-between overflow-hidden min-h-0">
                 {/* Title */}
                 <h3 className="text-black font-semibold text-base">
                 {product.title}
@@ -76,12 +76,12 @@ function UniversalCard({ product }) {
                 </div>
 
                 {/* Description */}
-                <p className="text-xs text-gray-700 text-start overflow-hidden text-ellipsis line-clamp-2">
+                <p className="text-xs text-gray-700 text-start overflow-hidden text-ellipsis line-clamp-2 break-words">
                     {product.description}
+
                 </p>
                 {/* Category and Credits */}
                 {
-                    !isDonated && (
                         <div className="flex justify-between items-center pt-2 text-sm font-medium text-purple-700">
                             <span className="pl-1">{product.exchange ? 'Exchangeable' : 'Non exchangeable'}</span>
                             <div className="flex items-center gap-1 text-black">
@@ -94,8 +94,9 @@ function UniversalCard({ product }) {
                                 {product.credits}
                             </div>
                         </div>
-                    )
+                    
                 }
+                
             </div>
         </div>
     );
