@@ -57,7 +57,7 @@ export default function NavBar() {
             <Link href="/#About">About</Link>
           </li>
           <li className="ml-7 hover:text-[#8139ed] hover:underline">
-            <Link href="/AllCategories">Shop</Link>
+            <Link href="/Products/AllCategories">Shop</Link>
           </li>
         </ul>
       </div>
@@ -69,7 +69,7 @@ export default function NavBar() {
             <span className="text-black mt-2 ml-1">{creditCount}</span>
           </div>) 
           }
-          <Link href="/Donations">
+          <Link href="/Products/Donations">
             <Image src="/images/donation-icon.png" alt="donation" width={27} height={27} className="-scale-x-100 ml-4 mt-1" />
           </Link>
           <Link href={isLoggedIn ? "/profile/wishlist" : "/loginPage"}>

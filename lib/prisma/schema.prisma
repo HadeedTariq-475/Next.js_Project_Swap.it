@@ -4,7 +4,6 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,21 +15,22 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement()) 
+  id         Int        @id @default(autoincrement())
   profilePic String?
-  firstName   String
-  lastName    String
-  email       String   @unique
-  phone       String?  @unique
-  password    String   
-  country     String?
-  city        String?
-  address1    String?
-  address2    String?
-  credits     Int      @default(1)
-  userType    UserType @default(NORMAL)
-  createdAt   DateTime @default(now())  
-  products    Product[]  @relation("UserProducts")
+  firstName  String
+  lastName   String
+  email      String     @unique
+  phone      String?    @unique
+  password   String
+  country    String?
+  city       String?
+  address1   String?
+  address2   String?
+  credits    Int        @default(1)
+  userType   UserType   @default(NORMAL)
+  createdAt  DateTime   @default(now())
+  products   Product[]  @relation("UserProducts")
+  wishlists  Wishlist[]
 }
 
 enum UserType {
@@ -58,34 +58,46 @@ enum ProductType {
 }
 
 enum ProductStatus {
-  ACTIVE     
-  SOLD       
-  EXCHANGED   
-  DONATED     
+  ACTIVE
+  SOLD
+  EXCHANGED
+  DONATED
 }
 
-
 model Product {
-  id          Int          @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   title       String
   description String
-  price       Int  @default(0)     
-  credits     Int          @default(0)
+  price       Int         @default(0)
+  credits     Int         @default(0)
   type        ProductType
   category    Category
-  exchange Boolean @default(false)
-  createdAt   DateTime     @default(now())
+  exchange    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
 
-  ownerId     Int
-  owner       User         @relation("UserProducts", fields: [ownerId], references: [id])
-  
-  images      ProductImage[]
-  status      ProductStatus @default(ACTIVE)
+  ownerId Int
+  owner   User @relation("UserProducts", fields: [ownerId], references: [id])
+
+  images    ProductImage[]
+  wishlists Wishlist[]
+  status    ProductStatus  @default(ACTIVE)
 }
 
 model ProductImage {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   url       String
   productId Int
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId])
 }

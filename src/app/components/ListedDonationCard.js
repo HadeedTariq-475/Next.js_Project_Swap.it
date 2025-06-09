@@ -3,9 +3,12 @@ import React from 'react'
 import Image from 'next/image'
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 
 export default function ListedDonationCard({id, img_src,title,desc,credits,onItemDelete,onEditClick}) {
+ 
+  const router = useRouter()
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState("");
@@ -56,9 +59,13 @@ export default function ListedDonationCard({id, img_src,title,desc,credits,onIte
     }
   };
 
+  const handleClick = () => {
+    router.push(`/ProductDetail/${id}`)
+  }
+
 
   return (
-    <div>
+    <div onClick={handleClick}>
       {(successMessage || errors) && (
           <div
             className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded shadow-md z-50 transition-all duration-300 
@@ -67,11 +74,11 @@ export default function ListedDonationCard({id, img_src,title,desc,credits,onIte
             {successMessage || errors}
           </div>
         )}
-        <div className='bg-purple-200 w-[305px] h-44 rounded-2xl flex shadow-md shadow-gray-500'>
+        <div className='bg-purple-200 w-[305px] h-44 rounded-2xl flex shadow-md shadow-gray-500 transition-transform hover:scale-105 hover:shadow-black cursor-pointer'>
 
             <Image src={img_src} alt="img" width={130} height={170} className='rounded-tl-2xl rounded-bl-2xl '/>
             <div className='p-3 w-full overflow-hidden'>
-                <h3 className='text-black '>{title}</h3>
+                <h3 className='text-black truncate line-clamp-1 overflow-hidden'>{title}</h3>
                 <p className='text-gray-700 text-xs mt-2 min-h-[3rem] line-clamp-3 break-words overflow-hidden'>{desc}</p>
                 <div className='flex items-center mt-3'>
                         <Image src="/images/credits.png" alt="credits" width={25} height={25}/>
@@ -80,10 +87,10 @@ export default function ListedDonationCard({id, img_src,title,desc,credits,onIte
         
                 <div className='w-full mt-2 flex justify-end'>
                     <div className='flex items-center gap-x-1'>
-                        <div className='bg-purple-500 w-6 h-6 rounded-sm cursor-pointer' onClick={handleEdit}>
+                        <div className='bg-purple-500 w-6 h-6 rounded-sm cursor-pointer' onClick={(e) => { e.stopPropagation(); handleEdit()}}>
                           <Image src="/images/edit-item.png" alt="edit item" width={18} height={18} className='mt-0.5 ml-1'/>
                         </div>
-                        <div className='bg-red-600 w-6 h-6 rounded-sm cursor-pointer' onClick={handleDelete}>
+                        <div className='bg-red-600 w-6 h-6 rounded-sm cursor-pointer' onClick={(e) => { e.stopPropagation(); handleDelete()}}>
                           <Image src="/images/delete.png" alt="edit item" width={18} height={18} className='mt-0.5 ml-1'/>
                         </div>  
                     </div> 

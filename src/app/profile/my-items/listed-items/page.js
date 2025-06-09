@@ -5,6 +5,7 @@ import ListedItemCard from '@/app/components/ListedItemCard'
 import AddListedItem from '@/app/components/AddListedItem'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import Link from 'next/link'
 
 export default function ListedItems() {
 
@@ -59,6 +60,7 @@ export default function ListedItems() {
           <div className='grid grid-cols-3 gap-x-4 gap-y-6 mt-4 mb-8 min-h-48'>
               {Listedproducts.length > 0 ? (
                 Listedproducts.slice().reverse().map((product, index) => (
+                  
                   <ListedItemCard
                     key={index}
                     id={product.id}
@@ -71,6 +73,7 @@ export default function ListedItems() {
                     onItemDelete={fetchUserProducts}
                     onEditClick={handleEditItem}
                   />
+                  
                 ))
               ) : (
                 <p className="col-span-3 text-center text-black pt-56">No products listed for sale yet.</p>

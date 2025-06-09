@@ -15,6 +15,7 @@ function ProductDetail({}) {
     const router = useRouter()
     const { id } = useParams();
     //hooks
+    const [userID, setuserID] = useState(null)
     const [product, setProduct] = useState(null);
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -35,9 +36,10 @@ function ProductDetail({}) {
       
           if (cookie) {
             setIsLoggedIn(true);
-              
+            
             // Simulate fetching user data based on userId
-            const userId = cookie.split('=')[1];
+            const userId = parseInt(cookie.split('=')[1]);
+            setuserID(userId)
             
           }
         }, []);
@@ -77,12 +79,49 @@ function ProductDetail({}) {
         fetchRandomProducts();
     }, []);
 
+    useEffect(() => {
+        const checkWishlistStatus = async () => {
+            
+            if (!userID || !id) return;
+
+            try {
+                const res = await fetch(`/api/Wishlist?userId=${userID}&productId=${id}`);
+                const data = await res.json();
+                setIsWishlisted(data.isWishlisted);
+            } catch (err) {
+                console.error('Error checking wishlist status', err);
+            }
+        };
+
+        
+        checkWishlistStatus();
+        
+    }, [id, userID]);
+
     if (!product) return <div>Loading...</div>; // Handle loading
 
-
     //The wihslist button just popping up 
-    const toggleWishlist = () => {
-        setIsWishlisted(!isWishlisted);
+    const toggleWishlist = async () => {
+        
+        const method = isWishlisted ? 'DELETE' : 'POST';
+        try {
+            const res = await fetch("/api/Wishlist", {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userID, productId: id }),
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+            setIsWishlisted(!isWishlisted);
+            } else {
+            alert(data.error);
+            }
+        } catch (err) {
+            console.error('Wishlist toggle failed', err);
+        }
     };
 
     //previous next by one logic 

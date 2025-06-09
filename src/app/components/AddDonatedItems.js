@@ -385,6 +385,7 @@ export default function AddDonatedItems({onClose,onItemAdded,editingItem = null}
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
+                required
                 className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm text-black"
               >
                 <option value="" disabled>--Choose Category--</option>

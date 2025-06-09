@@ -5,6 +5,7 @@ import ListedDonationCard from '@/app/components/ListedDonationCard'
 import AddDonatedItems from '@/app/components/AddDonatedItems'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import Link from 'next/link'
 
 export default function DonatedItems() {
 
@@ -61,6 +62,7 @@ export default function DonatedItems() {
             <div className='grid grid-cols-3 gap-x-4 mt-4 mb-8 min-h-48'>
                     {Donatedproducts.length > 0 ? (
                       Donatedproducts.slice().reverse().slice(0,3).map((product, index) => (
+                        
                         <ListedDonationCard
                           key={index}
                           id={product.id}
@@ -71,6 +73,7 @@ export default function DonatedItems() {
                           onItemDelete={fetchUserProducts}
                           onEditClick={handleEditItem}
                         />
+                        
                       ))
                     ) : (
                       <p className="col-span-3 text-center text-black pt-56">No products Donated yet.</p>
