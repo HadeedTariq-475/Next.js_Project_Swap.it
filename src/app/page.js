@@ -23,6 +23,9 @@ export default function HomePage() {
     if (cookie) {
       setIsLoggedIn(true);
     }
+
+    fetch("/api/socket");
+
   }, []);
 
   const videoSources = [

@@ -8,6 +8,7 @@ import NavBar from "/src/app/components/NavBar";
 import ProductGrid  from '/src/app/components/ProductGrid';
 import Footer from "/src/app/components/Footer";
 import InboxPanel from "/src/app/components/InboxPanel";
+import axios from "axios";
 
 function ProductDetail({}) {
 
@@ -23,11 +24,14 @@ function ProductDetail({}) {
     const [history, setHistory] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isOpen, setIsOpen] = useState(false)
+    const [successMessage, setSuccessMessage] = useState("");
+    const [errors, setErrors] = useState("");
 
 
     const OpenInbox = () => setIsOpen(true)
     const CloseInbox = () => setIsOpen(false)
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+
      useEffect(() => {
           // Check if userId cookie exists
           const cookie = document.cookie
@@ -43,6 +47,17 @@ function ProductDetail({}) {
             
           }
         }, []);
+
+    useEffect(() => {
+          if (successMessage || errors) {
+            const timer = setTimeout(() => {
+              setSuccessMessage("");
+              setErrors("");
+            }, 4000);
+            return () => clearTimeout(timer);
+          }
+        }, [successMessage, errors]); 
+        
     //whenever new product is laoded the image index i set to 0
     useEffect(() => {
         if (product?.images?.length) {
@@ -140,9 +155,32 @@ function ProductDetail({}) {
         });
     };
 
+    const sendNotification = async (type) => {
+        try {
+            await axios.post("/api/notifications", {
+            buyer_id: userID,
+            seller_id: product.ownerId,
+            notification_type: type,
+            productId: product.id
+        });
+        setSuccessMessage("Request Notification sent!");
+        } catch (err) {
+        console.error(err);
+        setErrors("Failed to send notification");
+        }
+    };
+
     //main as obvious
     return (
         <div className="relative bg-white min-h-screen bg-cover bg-center py-2">
+            {(successMessage || errors) && (
+            <div
+                className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded shadow-md z-50 transition-all duration-300 
+                ${successMessage ? "bg-green-500" : "bg-red-500"} text-white`}
+            >
+                {successMessage || errors}
+            </div>
+            )}
             <NavBar />
             <h1 className="absolute top-24 left-1/2 transform -translate-x-1/2 text-3xl font-light z-30 text-black">
                 {product.title}
@@ -221,12 +259,14 @@ function ProductDetail({}) {
                     </div>
                     <div className="flex gap-3 mt-44 justify-center">
                         <button
+                            onClick={() => sendNotification("CASH_REQUEST")}
                             className={`px-6 py-2 rounded-md font-semibold ${
                             product.type === 'DONATE' ? 'bg-[#ccadfa] text-white cursor-not-allowed' : 'bg-[#9C60F4] text-white'
                             }`}
                             disabled={product.type === 'DONATE'}
                         >Cash</button>
                         <button
+                            onClick={() => sendNotification("EXCHANGE_REQUEST")}
                             className={`px-6 py-2 rounded-md font-semibold ${
                             product.exchange && product.type !== 'DONATE'
                                 ? 'bg-[#9C60F4] text-white'
@@ -237,6 +277,7 @@ function ProductDetail({}) {
                             Exchange
                         </button>
                         <button
+                            onClick={() => sendNotification("CREDIT_REQUEST")}
                             className={`px-6 py-2 rounded-md font-semibold ${
                             product.credits > 0 
                                 ? 'bg-[#9C60F4] text-white'
