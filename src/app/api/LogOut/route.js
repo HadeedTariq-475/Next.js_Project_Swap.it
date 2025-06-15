@@ -5,7 +5,7 @@ export async function POST() {
   const cookieStore = cookies();
   const userId = cookieStore.get('userId')?.value;
 
-  console.log("User ID from cookie:", userId); // You’ll now see the cookie value here ✅
+  console.log("User ID from cookie:", userId); 
 
   const response = NextResponse.json({ message: 'Logged out' });
 

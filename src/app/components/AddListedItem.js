@@ -229,26 +229,33 @@ export default function AddListedItem({onClose,onItemAdded,editingItem = null}) 
 
   const handleRemoveImage = async (index) => {
     const imgToRemove = images[index];
-    
-    // Optional: remove from Supabase + DB if it's an old image
+
+    // If it's an old image (i.e., part of existing images from DB)
     if (!imgToRemove.file && editingItem) {
-      await axios.delete(`/api/products_images`, {
-        data: { productId: editingItem.id, imageUrl: imgToRemove.url }
-      });
+      try {
+        await axios.delete(`/api/products_images`, {
+          data: { productId: editingItem.id, imageUrl: imgToRemove.url }
+        });
+      } catch (err) {
+        console.error("Failed to delete old image from DB", err);
+      }
     }
 
     const updatedImages = [...images];
-    const updatedFiles = [...formData.newImageFiles];
-
     updatedImages.splice(index, 1);
-    if (imgToRemove.file) updatedFiles.splice(index, 1); // only remove from newImageFiles if it's a new file
+
+    // Rebuild the newImageFiles array by filtering based on the updated images
+    const updatedNewFiles = updatedImages
+      .filter(img => img.file) // keep only new files
+      .map(img => img.file);   // get the actual File objects
 
     setImages(updatedImages);
     setFormData(prev => ({
       ...prev,
-      newImageFiles: updatedFiles,
+      newImageFiles: updatedNewFiles,
     }));
   };
+
 
 
   return (

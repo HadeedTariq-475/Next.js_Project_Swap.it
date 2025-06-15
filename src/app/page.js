@@ -67,7 +67,6 @@ export default function HomePage() {
     <div>
 
       <HomeNavBar />
-
       {/* Video background section */}
       <section id="Home" className="relative h-screen w-full">
         <video

@@ -128,16 +128,16 @@ export default function AccountInfo() {
       profilePic: uploadedImageUrl,
     };
 
+    
     // Send to your DB (use axios or fetch)
     try {
       await axios.put('/api/User', payload); // or POST depending on your setup
       setSuccessMessage("Profile updated!");
     } catch (err) {
-      console.error("Saving error:", err);
+      console.error("Saving error:", err.data);
       setErrors("Failed to save profile");
     }
   };
-
 
     // When address1 changes, if sameAddress is true, update address2 as well
   const handleAddress1Change = (e) => {
